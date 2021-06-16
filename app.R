@@ -176,172 +176,182 @@ ui <- list(
         #### Set up the Prerequisites Page ----
         tabItem(tabName = "pre",
           h2("Background"),
-          h4("Recall the following:"),
-          column(11,
-                 h3(tags$li("Stationarity:")),
-                 h4("Diagnostics for stationarity include looking for constant mean (or, trend) and variance over time"),
-                 column(11, offset=1,
-                        h4("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
-                        h4("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
-                        h4("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
-                 ),
-                 h3(tags$li("Autocorrelation Functions of Stationary Time Series:")),
-                 h4("We typically trust the dashed lines in the autocorrelation function (ACF) plots to be the significance cut-off bounds for any lag's correlation"),
-                 h4("In a model with non-zero autoregressive (AR) and moving average (MA) parts, there is no logical interpretation for both ACFS cutting off, thus,"),
-                 column(11, offset=1,
-                        h4(tags$li("For AR(p) models, the ACF will tail off and the PACF will cut off after lag p.")),
-                        h4(tags$li("For MA(q) models, the ACF will cut off after lag q, and the PACF will tail off.")),
-                        h4(tags$li("For ARMA(p, q) models, both the ACF and the PACF will both tail off."))
-                 ),
-                 h4("The ARMA subsets plot is not the best tool for determining ARMA(p,q) orders, and thus will only be used as a tie breaker or guide after the ACF and PACF plots have been thoroughly inspected."),
-                 h3(tags$li("Model Diagnostics:")),
-                 h4("The ARIMA model aims to forecast future values of a stationary time series by estimating a mathematical function to explain the underlying correlation structure. For this reason, the ACF and PACF of the residuals of the ARIMA model that has been fitted should not contain any significant remaing correlation."),
-                 h4("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model.")
-          ),
-          fluidRow(
-            br()
-          ),
-          br(),
-          fluidRow(
+          br(), 
+            h3("Stationarity:"),
+            p("Diagnostics for stationarity include looking for constant mean
+               (or, trend) and variance over time"),
+            tags$ul(
+              tags$li("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
+              tags$li("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
+              tags$li("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
+            ), 
+          
+            h3("Autocorrelation Functions of Stationary Time Series:"),
+            p("We typically trust the dashed lines in the autocorrelation function
+               (ACF) plots to be the significance cut-off bounds for any lag's
+               correlation"),
+            p("In a model with non-zero autoregressive (AR) and moving average
+               (MA) parts, there is no logical interpretation for both ACFS cutting
+               off, thus,"),
+            tags$ul(
+              tags$li("For AR(p) models, the ACF will tail off and the PACF will
+                      cut off after lag p."),
+              tags$li("For MA(q) models, the ACF will cut off after lag q, and
+                      the PACF will tail off."),
+              tags$li("For ARMA(p, q) models, both the ACF and the PACF will both
+                      tail off.")
+             ),
+            p("The ARMA subsets plot is not the best tool for determining ARMA(p,q)
+               orders, and thus will only be used as a tie breaker or guide after
+               the ACF and PACF plots have been thoroughly inspected."),
+            br(), 
+            h3("Model Diagnostics:"),
+            p("The ARIMA model aims to forecast future values of a stationary time
+              series by estimating a mathematical function to explain the underlying
+              correlation structure. For this reason, the ACF and PACF of the residuals
+              of the ARIMA model that has been fitted should not contain any significant
+              remaing correlation."),
+            p("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model."),
+      
+            br(),
             div(style = "text-align: center",
-                bsButton("go0", "Go to the overview", icon("bolt"), style = "danger", size = "large", class="circle grow")
-            )
-          ),
+                bsButton(inputId = "go0", 
+                         label = "Go to the overview",
+                         icon("bolt"),
+                         style = "danger",
+                         size = "large",
+                         class="circle grow")
+            ),
+          
           br()
         ),
        
         tabItem(tabName = "sim",
-                tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
-                
-                div(style="display: inline-block;vertical-align:top;",
-                    tags$a(href='https://shinyapps.science.psu.edu/',tags$img(src='homebut.PNG', width = 19))
-                ),
-                div(style="display: inline-block;vertical-align:top;",
-                    circleButton("info1",icon = icon("info"), status = "myClass",size = "xs")
-                ),
-                fluidPage(
-                  fluidRow(
-                    column(width = 4,
-                           selectInput("models","Models",
-                                       list( "Autoregressive" = "AR",
-                                             "Moving Average" = "MA",
-                                             "Autoregressive Moving Average" = "ARMA"
-                                       )
-                           ),
-                           sliderInput("n",
-                                       label = "Sample Size",
-                                       min = 10,
-                                       max = 1000,
-                                       step = 5,
-                                       value = 20,
+          tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
+          
+          fluidPage(
+            fluidRow(
+              column(width = 4,
+                     selectInput("models","Models",
+                                 list( "Autoregressive" = "AR",
+                                       "Moving Average" = "MA",
+                                       "Autoregressive Moving Average" = "ARMA"
+                                 )
+                     ),
+                     sliderInput("n",
+                                 label = "Sample Size",
+                                 min = 10,
+                                 max = 1000,
+                                 step = 5,
+                                 value = 20,
+                                 ticks = T
+                     ),
+                     conditionalPanel(
+                       #AR
+                       condition = ("input.models=='AR' || input.models=='ARMA'"),
+                       h4(p("AR(p)")),
+                       
+                       selectInput("p","p order",
+                                   list( "1",
+                                         "2"
+                                   )
+                       ),
+                       conditionalPanel(
+                         condition = ("input.p == '1' || input.p == '2'"),
+                         #h5(p(withMathJax(textOutput("Phi1")))),
+                         sliderInput("phi1",
+                                     label = "Phi1",
+                                     min = -0.9,
+                                     max = 0.9,
+                                     step = 0.1,
+                                     value = 0.5,
+                                     ticks = T
+                         ),
+                         conditionalPanel(
+                           condition = "input.p == '2'",
+                           
+                           sliderInput("phi2",
+                                       label = "Phi2",
+                                       min = -0.9,
+                                       max = 0.9,
+                                       step = 0.1,
+                                       value = 0,
                                        ticks = T
-                           ),
-                           conditionalPanel(
-                             #AR
-                             condition = ("input.models=='AR' || input.models=='ARMA'"),
-                             h4(p("AR(p)")),
-                             
-                             selectInput("p","p order",
-                                         list( "1",
-                                               "2"
-                                         )
-                             ),
-                             conditionalPanel(
-                               condition = ("input.p == '1' || input.p == '2'"),
-                               #h5(p(withMathJax(textOutput("Phi1")))),
-                               sliderInput("phi1",
-                                           label = "Phi1",
-                                           min = -0.9,
-                                           max = 0.9,
-                                           step = 0.1,
-                                           value = 0.5,
-                                           ticks = T
-                               ),
-                               conditionalPanel(
-                                 condition = "input.p == '2'",
-                                 
-                                 sliderInput("phi2",
-                                             label = "Phi2",
-                                             min = -0.9,
-                                             max = 0.9,
-                                             step = 0.1,
-                                             value = 0,
-                                             ticks = T
-                                 )
-                               )
-                             )
-                             
-                           ),
-                           conditionalPanel(
-                             condition = ("input.models=='ARMA'"),
-                             hr()
-                           ),
-                           conditionalPanel(
-                             #MA
-                             condition = ("input.models=='MA' || input.models=='ARMA'"),
-                             h4(p("MA(q)")),
-                             
-                             selectInput("q","q order",
-                                         list( "1",
-                                               "2"
-                                         )
-                             ),
-                             conditionalPanel(
-                               condition = ("input.q == '1' || input.q == '2'"),
-                               #h5(p(withMathJax(textOutput("Phi1")))),
-                               
-                               sliderInput("theta1",
-                                           label = "Theta1",
-                                           min = -0.9,
-                                           max = 0.9,
-                                           step = 0.1,
-                                           value = 0.5,
-                                           ticks = T
-                               ),
-                               conditionalPanel(
-                                 condition = ("input.q == '2'"),
-                                 
-                                 sliderInput("theta2",
-                                             label = "Theta2",
-                                             min = -0.9,
-                                             max = 0.5,
-                                             step = 0.1,
-                                             value = 0.1,
-                                             ticks = T
-                                 )
-                               )
-                             )
                            )
-                    ),
-                    column(width = 8,
-                           fluidRow(
-                             column(12,
-                                    plotOutput("plotSIM")
-                             )
-                           ),
-                           fluidRow(
-                             conditionalPanel(
-                               condition="input.models=='ARMA'",
-                               column(width = 6, plotOutput("plot.ACF")),
-                               column(width = 6, plotOutput("plot.PACF"))
-                             )
+                         )
+                       )
+                       
+                     ),
+                     conditionalPanel(
+                       condition = ("input.models=='ARMA'"),
+                       hr()
+                     ),
+                     conditionalPanel(
+                       #MA
+                       condition = ("input.models=='MA' || input.models=='ARMA'"),
+                       h4(p("MA(q)")),
+                       
+                       selectInput("q","q order",
+                                   list( "1",
+                                         "2"
+                                   )
+                       ),
+                       conditionalPanel(
+                         condition = ("input.q == '1' || input.q == '2'"),
+                         #h5(p(withMathJax(textOutput("Phi1")))),
+                         
+                         sliderInput("theta1",
+                                     label = "Theta1",
+                                     min = -0.9,
+                                     max = 0.9,
+                                     step = 0.1,
+                                     value = 0.5,
+                                     ticks = T
+                         ),
+                         conditionalPanel(
+                           condition = ("input.q == '2'"),
+                           
+                           sliderInput("theta2",
+                                       label = "Theta2",
+                                       min = -0.9,
+                                       max = 0.5,
+                                       step = 0.1,
+                                       value = 0.1,
+                                       ticks = T
                            )
-                    )
-                  ),
-                  
-                  fluidRow(column(width = 12,
-                                  fluidRow(
-                                    conditionalPanel(
-                                      condition="input.models!='ARMA'",
-                                      fluidRow(
-                                        column(6, plotOutput("plotACF")),
-                                        column(6, plotOutput("plotPACF"))
-                                      )
-                                    )
-                                  )
-                  )
-                  )
-                )#fluidpage
+                         )
+                       )
+                     )
+              ),
+              column(width = 8,
+                     fluidRow(
+                       column(12,
+                              plotOutput("plotSIM")
+                       )
+                     ),
+                     fluidRow(
+                       conditionalPanel(
+                         condition="input.models=='ARMA'",
+                         column(width = 6, plotOutput("plot.ACF")),
+                         column(width = 6, plotOutput("plot.PACF"))
+                       )
+                     )
+              )
+            ),
+            
+            fluidRow(column(width = 12,
+                            fluidRow(
+                              conditionalPanel(
+                                condition="input.models!='ARMA'",
+                                fluidRow(
+                                  column(6, plotOutput("plotACF")),
+                                  column(6, plotOutput("plotPACF"))
+                                )
+                              )
+                            )
+            )
+            )
+          )#fluidpage
         ),
         
         #### Datasets ####
