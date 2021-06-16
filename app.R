@@ -52,6 +52,10 @@ ui <- list(
         menuItem("Simulation", tabName = "sim", icon = icon("wpexplorer")),
         menuItem("Analyzing Real Data", tabName = "data", icon = icon("cogs")),
         menuItem("Concept Game", tabName = "game", icon = icon("gamepad"))
+      ),
+      tags$div(
+        class = "sidebar-logo",
+        boastUtils::sidebarFooter()
       )
     ),
     ### Create the content ----
@@ -89,19 +93,7 @@ ui <- list(
                     models effect the autocorrelation function (ACF) and partial
                     autocorrelation function (PACF) plots.")
           ),
-          br(),
-          
-         
-          div(style = "text-align: center",
-              bsButton(
-                inputId = "go1", 
-                label = "GO!", 
-                icon("book"), 
-                style = "default", 
-                size = "large")
-          ),
-        
-          
+          br(), 
           h4("Time Series Analysis with real data:"),
           
              tags$li("In the first tab, select the data set that you would like
@@ -122,13 +114,8 @@ ui <- list(
                           regression, and the transformed data is the residuals
                           from that regression."))
                 ),
-      
-  
-          div(style = "text-align: center",
-              bsButton("go2", "G O !", icon("bolt"), style = "danger", size = "large", class="circle grow")
-          ),
           
-         
+          br(), 
           h4("Time Series Concept Review Game:"),
              tags$li("Click the tic-tac-toe image to begin."),
              tags$li("To play the game, you will select the square that you want
@@ -144,14 +131,16 @@ ui <- list(
                      diagonally, and you lose when 3 O's line up horizontally,
                      vertically or diagonally, otherwise the game results in a tie."),
       
-      
+          br(), 
+          br(), 
           div(style = "text-align: center",
-              bsButton(inputId = "go3",
+              bsButton(inputId = "go0", 
                        label = "GO!",
-                       icon("bolt"),
-                       style = "danger",
+                       icon("book"),
+                       style = "default",
                        size = "large")
           ),
+          
           
           br(), 
           br(),
@@ -176,7 +165,6 @@ ui <- list(
         #### Set up the Prerequisites Page ----
         tabItem(tabName = "pre",
           h2("Background"),
-          br(), 
             h3("Stationarity:"),
             p("Diagnostics for stationarity include looking for constant mean
                (or, trend) and variance over time"),
@@ -214,21 +202,27 @@ ui <- list(
             p("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model."),
       
             br(),
-            div(style = "text-align: center",
-                bsButton(inputId = "go0", 
-                         label = "Go to the overview",
-                         icon("bolt"),
-                         style = "danger",
-                         size = "large",
-                         class="circle grow")
-            ),
+            br(), 
           
-          br()
+          div(style = "text-align: center",
+              bsButton(
+                inputId = "go1", 
+                label = "GO!", 
+                icon("wpexplorer"), 
+                style = "default", 
+                size = "large")
+          ),
         ),
        
         tabItem(tabName = "sim",
-          tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
-          
+          #tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
+          h2("Simulation"), 
+          p("Use the sliders for the coefficients and explore how changing parameter
+            values affects the time series plot."),
+          p("Use the drop down menus and observe how different orders of models
+            effect the autocorrelation function (ACF) and partial autocorrelation
+            function (PACF) plots."),
+          br(),
           fluidPage(
             fluidRow(
               column(width = 4,
@@ -351,11 +345,39 @@ ui <- list(
                             )
             )
             )
-          )#fluidpage
+          ),#fluidpage
+          
+          div(style = "text-align: center",
+              bsButton(
+                inputId = "go2", 
+                label = "GO!", 
+                icon("cogs"), 
+                style = "default", 
+                size = "large")
+          ),
         ),
         
         #### Datasets ####
         tabItem(tabName = "data",
+          h2("Analyzing Real Data"), 
+          p("In the first tab, select the data set that you would like to analyze,
+            and fit transformations until the data seems stationary."),
+          p("Here, you must consider that the last 12 observations of each data
+            set are hidden from the user so that they could be presented in the
+            last tab alongside the user's model's forecasts."), 
+          p("For each transformation consider the following:", 
+            tags$ul(
+              tags$li("The transformations are of the form `seas_diff(diff(log(data)))`,
+                      that is, the log transformation will always be taken first,
+                      followed by the difference of lag one, and then the seasonal
+                      differencing."), 
+              tags$li("The trend can only be removed before any other transformation,
+                      or after all transformations. The trend is removed using
+                      regression, and the transformed data is the residuals from
+                      that regression.")
+            )
+          ),
+          br(), 
           tabsetPanel(id = "tabs2",
           tabPanel(title = h4("Achieving Stationarity"), value = "step1",
             h4("To begin, please choose from of the data sets below any one that you would like."),
@@ -410,7 +432,9 @@ ui <- list(
                       div(id = "div",
                           actionButton("go4", "Next step!", style = "primary", disabled = TRUE)
                       )
-                    )
+                    ), 
+                  
+                  br(), 
                   )
                 ),
               mainPanel(
@@ -448,7 +472,8 @@ ui <- list(
               ),
               div(style = "text-align: center",
                   bsButton("go5", "Next step!", style = "primary")
-              )
+              ), 
+              br()
             )
           ),
           tabPanel(title = h4("Forecast"), value = "step3",
@@ -504,33 +529,32 @@ ui <- list(
                       div(style = "position:relative; z-index: auto;",
                           bsPopover(id="bar", title = "Model fit evaluation", content = "This indicates how well your model was fit. 100 would indicate that your model is as good as can be. 0 would indicate that your model was no better than using just the mean as the predictor.", trigger = "hover", placement = "right")
                       )
-                    )#,
+                    ),
                     
-                    # br(),
+                    br(),
                     
                 )
               )
-            )
-          
+            ),
+          div(style = "text-align: center",
+              bsButton(inputId = "go3",
+                       label = "GO!",
+                       icon("bolt"),
+                       style = "default",
+                       size = "large")
+          )
         ),
         
         ##Concept Game tic-tac-toe
         tabItem(tabName = "game",
+          h2("Concept Game"),
+          p("Click on desired square, answer the question, then hit submit and
+            go to next question."),
+          p("If you answer correctly, you will receive an X in the square you chose,
+            if not, it will be an O."),
+          p("Try your best to win the game and get 3 X's in a row !"),
+          br(), 
           fluidPage(
-            
-            div(style="display: inline-block;vertical-align:top;",
-                tags$a(href='https://shinyapps.science.psu.edu/',tags$img(src='homebut.PNG', width = 19))
-            ),
-            div(style="display: inline-block;vertical-align:top;",
-                circleButton("info",icon = icon("info"), status = "myClass",size = "xs")
-            ),
-            fluidRow(
-              div(style = "text-align: center;",
-                  h4("If you answer correctly, You will receive an X in the square you chose, if not, it will be an O."),
-                  h4("Try your best to win the game and get 3 X's in a row !"),
-                  br()
-              )
-            ),
             fluidRow(
               column(4,
                      leafletOutput('image'),
@@ -578,9 +602,28 @@ ui <- list(
 )
 
 server <- function(session, input, output) {
+  
+  ## Set up Info button ----
+  observeEvent(
+    eventExpr = input$info,
+    handlerExpr = {
+      sendSweetAlert(
+        session = session,
+        type = "info",
+        title = "Information",
+        text = "In this app, the user will explore common time series models with
+        simulations and real data, and be challenged to review the material in a
+        tic-tac-toe game."
+      )
+    }
+  )
+  
   ######exploration and simulation
   observeEvent(input$go0,{
-    updateTabItems(session, "tabs", "overview")
+    updateTabItems(
+      session = session, 
+      inputId = "tabs", 
+      selected = "pre")
   })
   observeEvent(input$go1,{
     updateTabItems(session, "tabs", "sim")
@@ -606,28 +649,7 @@ server <- function(session, input, output) {
   
   
   ####### SIMULATED #######
-  
-  observeEvent(input$info1,{
-    sendSweetAlert(
-      session = session,
-      title = "Instructions:",
-      text = "•	Use the sliders for the coefficients and explore how changing parameter values affects the time series plot.\n
-      •	Use the drop down menus and observe how different orders of models effect the autocorrelation function (ACF) and partial autocorrelation function (PACF) plots.",
-      type = "info"
-    )
-  })
-  observeEvent(input$info2,{
-    sendSweetAlert(
-      session = session,
-      title = "Instructions:",
-      text = "•	In the first tab, select the data set that you would like to analyze, and fit transformations until the data seems stationary.\n
-      •	Here, you must consider that the last 12 observations of each data set are hidden from the user so that they could be presented in the last tab alongside the user's model's forecasts.\n
-      •	For each transformation consider the following:\n
-      i. The transformations are of the form `seas_diff(diff(log(data)))`, that is, the log transformation will always be taken first, followed by the difference of lag one, and then the seasonal differencing.\n
-      ii. The trend can only be removed before any other transformation, or after all transformations. The trend is removed using regression, and the transformed data is the residuals from that regression.",
-      type = "info"
-    )
-  })
+
   #make sure higher order models are stationary
   observeEvent(input$phi1, {
     if(input$p == '1'){return(NULL)}
@@ -1647,14 +1669,6 @@ server <- function(session, input, output) {
   }, deleteFile = TRUE)
   
   ######tic-tac-toe
-  observeEvent(input$info,{
-    sendSweetAlert(
-      session = session,
-      title = "Instructions:",
-      text = "Click on desired square, answer the question, then hit submit and go to next question.",
-      type = "info"
-    )
-  })
   
   
   #### question bank ####
