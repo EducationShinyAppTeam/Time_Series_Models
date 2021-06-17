@@ -27,7 +27,7 @@ library(boastUtils)
 ui <- list(
   ## Create the app page ----
   dashboardPage(
-    skin = "blue",
+    skin = "purple",
     dashboardHeader(
       title = "Time Series Models",
       titleWidth = 250,
