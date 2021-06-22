@@ -9,12 +9,12 @@ library(TSA)
 library(ggplot2)
 library(magrittr)
 library(tidyr)
-library(rlang)
-library(RColorBrewer)
+#library(rlang)
+#library(RColorBrewer)
 library(raster)
 library(rgdal)
 library(DT)
-library(V8)
+#library(V8)
 #library(discrimARTs)
 library(leaflet)
 library(raster)
@@ -51,7 +51,8 @@ ui <- list(
         menuItem("Prerequisite", tabName = "pre", icon = icon("book")),
         menuItem("Simulation", tabName = "sim", icon = icon("wpexplorer")),
         menuItem("Analyzing Real Data", tabName = "data", icon = icon("cogs")),
-        menuItem("Concept Game", tabName = "game", icon = icon("gamepad"))
+        menuItem("Concept Game", tabName = "game", icon = icon("gamepad")), 
+        menuItem("References", tabName = "references", icon = icon("leanpub"))
       ),
       tags$div(
         class = "sidebar-logo",
@@ -226,96 +227,96 @@ ui <- list(
           fluidPage(
             fluidRow(
               column(width = 4,
-                     selectInput("models","Models",
-                                 list( "Autoregressive" = "AR",
-                                       "Moving Average" = "MA",
-                                       "Autoregressive Moving Average" = "ARMA"
-                                 )
-                     ),
-                     sliderInput("n",
-                                 label = "Sample Size",
-                                 min = 10,
-                                 max = 1000,
-                                 step = 5,
-                                 value = 20,
-                                 ticks = T
-                     ),
-                     conditionalPanel(
-                       #AR
-                       condition = ("input.models=='AR' || input.models=='ARMA'"),
-                       h4(p("AR(p)")),
+                selectInput("models","Models",
+                  list("Autoregressive" = "AR",
+                       "Moving Average" = "MA",
+                       "Autoregressive Moving Average" = "ARMA")
+                ),
+                sliderInput(
+                  inputId = "n",
+                  label = "Sample Size",
+                  min = 10,
+                  max = 1000,
+                  step = 5,
+                  value = 20,
+                  ticks = T
+                 ),
+                conditionalPanel(
+                  #AR
+                  condition = ("input.models=='AR' || input.models=='ARMA'"),
+                  h4(p("AR(p)")),
+                   
+                  selectInput(
+                    inputId = "p",
+                    label = "p order",
+                    list( "1", "2")
+                   ),
+                  conditionalPanel(
+                    condition = ("input.p == '1' || input.p == '2'"),
+                    #h5(p(withMathJax(textOutput("Phi1")))),
+                    sliderInput(
+                    inputId = "phi1",
+                    label = "Phi1",
+                    min = -0.9,
+                    max = 0.9,
+                    step = 0.1,
+                    value = 0.5,
+                    ticks = T
+                    ),
+                  conditionalPanel(
+                    condition = "input.p == '2'",
+                   
+                    sliderInput("phi2",
+                      label = "Phi2",
+                      min = -0.9,
+                      max = 0.9,
+                      step = 0.1,
+                      value = 0,
+                      ticks = T)
+                      )
+                    )
+                  ),
+                  conditionalPanel(
+                    condition = ("input.models=='ARMA'"),
+                    hr()
+                  ),
+                  conditionalPanel(
+                    #MA
+                    condition = ("input.models=='MA' || input.models=='ARMA'"),
+                    h4(p("MA(q)")),
+                   
+                    selectInput(
+                      inputId = "q",
+                      label = "q order",
+                      list("1","2")
+                    ),
+                    conditionalPanel(
+                      condition = ("input.q == '1' || input.q == '2'"),
+                      #h5(p(withMathJax(textOutput("Phi1")))),
+                     
+                      sliderInput("theta1",
+                        label = "Theta1",
+                        min = -0.9,
+                        max = 0.9,
+                        step = 0.1,
+                        value = 0.5,
+                        ticks = T),
+                      
+                    conditionalPanel(
+                      condition = ("input.q == '2'"),
                        
-                       selectInput("p","p order",
-                                   list( "1",
-                                         "2"
-                                   )
-                       ),
-                       conditionalPanel(
-                         condition = ("input.p == '1' || input.p == '2'"),
-                         #h5(p(withMathJax(textOutput("Phi1")))),
-                         sliderInput("phi1",
-                                     label = "Phi1",
-                                     min = -0.9,
-                                     max = 0.9,
-                                     step = 0.1,
-                                     value = 0.5,
-                                     ticks = T
-                         ),
-                         conditionalPanel(
-                           condition = "input.p == '2'",
-                           
-                           sliderInput("phi2",
-                                       label = "Phi2",
-                                       min = -0.9,
-                                       max = 0.9,
-                                       step = 0.1,
-                                       value = 0,
-                                       ticks = T
-                           )
-                         )
-                       )
-                       
-                     ),
-                     conditionalPanel(
-                       condition = ("input.models=='ARMA'"),
-                       hr()
-                     ),
-                     conditionalPanel(
-                       #MA
-                       condition = ("input.models=='MA' || input.models=='ARMA'"),
-                       h4(p("MA(q)")),
-                       
-                       selectInput("q","q order",
-                                   list( "1",
-                                         "2"
-                                   )
-                       ),
-                       conditionalPanel(
-                         condition = ("input.q == '1' || input.q == '2'"),
-                         #h5(p(withMathJax(textOutput("Phi1")))),
-                         
-                         sliderInput("theta1",
-                                     label = "Theta1",
-                                     min = -0.9,
-                                     max = 0.9,
-                                     step = 0.1,
-                                     value = 0.5,
-                                     ticks = T
-                         ),
-                         conditionalPanel(
-                           condition = ("input.q == '2'"),
-                           
-                           sliderInput("theta2",
-                                       label = "Theta2",
-                                       min = -0.9,
-                                       max = 0.5,
-                                       step = 0.1,
-                                       value = 0.1,
-                                       ticks = T
-                           )
-                         )
-                       )
-                     )
+                      sliderInput(
+                        inputId = "theta2",
+                        label = "Theta2",
+                        min = -0.9,
+                        max = 0.5,
+                        step = 0.1,
+                        value = 0.1,
+                        ticks = T
+                      )
+                    )
+                  )
+                )
               ),
               column(width = 8,
                      fluidRow(
@@ -380,9 +381,16 @@ ui <- list(
           br(), 
           tabsetPanel(id = "tabs2",
           tabPanel(title = h4("Achieving Stationarity"), value = "step1",
-            h4("To begin, please choose from of the data sets below any one that you would like."),
-            h4("Use the checkbox options to make your data look satisfactorily stationary."),
-            h4("The first part of our analysis is achieving stationarity, so that you can correctly judge the correlation structure to assign to the arima model."),
+            p(
+              tags$ul(
+                tags$li("To begin, please choose from of the data sets below any
+                        one that you would like."),
+                tags$li("Use the checkbox options to make your data look satisfactorily
+                      stationary."),
+                tags$li("The first part of our analysis is achieving stationarity,
+                        so that you can correctly judge the correlation structure
+                        to assign to the arima model.")
+                )),
             sidebarLayout(
               sidebarPanel(
                 selectInput("sets",tags$b("Choose a Dataset Below"),
@@ -448,7 +456,9 @@ ui <- list(
             )
           ),
           tabPanel(title = h4("Determine ARMA order"), value = "step2",
-            h4("Now, that you have made your data stationary, you can inspect the resulting acf plots as well as the ARMAsubsets plot below to determine the arima order and fit a model."),
+            p("Now, that you have made your data stationary, you can inspect the
+              resulting acf plots as well as the ARMAsubsets plot below to determine
+              the arima order and fit a model."),
             fluidRow(
               plotOutput("ACF"),
               bsPopover(id="ACF", title = "ACF of transformed data", content = "The blue dashed line represents significance bounds for correlation at different lags in the data.", trigger = "hover", placement = "bottom"),
@@ -479,7 +489,16 @@ ui <- list(
           tabPanel(title = h4("Forecast"), value = "step3",
                   fluidRow(
                     column(11,
-                           h4("Below you can see how well you fit the data to a time series by seeing the resulting forecasts (plotted against the last 12 observations of the data set, which were hidden from the initial time series plot), this plot will show you-in blue-only the final 100 observations in the data set. You can also observe the correlation structure of the residuals of the arima fit to see if you were able to fully explain the correlation with the model. The progress bar will show you how close you are to the best possible fit for the data set.")
+                      p("Below you can see how well you fit the data to a time
+                        series by seeing the resulting forecasts (plotted against
+                        the last 12 observations of the data set, which were hidden
+                        from the initial time series plot), this plot will show
+                        you-in blue-only the final 100 observations in the data set.
+                        You can also observe the correlation structure of the
+                        residuals of the arima fit to see if you were able to fully
+                        explain the correlation with the model. The progress bar
+                        will show you how close you are to the best possible fit
+                        for the data set.")
                     )
                   ),
                   fluidRow(
@@ -557,35 +576,33 @@ ui <- list(
           fluidPage(
             fluidRow(
               column(4,
-                     leafletOutput('image'),
-                     br(),
-                     textOutput("warning"),
-                     textOutput("gameMessage")
+                 leafletOutput('image'),
+                 br(),
+                 textOutput("warning"),
+                 textOutput("gameMessage")
               ),
               column(8,
-                     
-                     conditionalPanel("output.temp != 2",
-                                      conditionalPanel("input.image_click",
-                                                       uiOutput("Question"),
-                                                       uiOutput("CurrentQuestion"),
-                                                       uiOutput("CurrentQuestion.extra"),
-                                                       br(),
-                                                       br(),
-                                                       br()
-                                      ),
-                                      textOutput("directions"),
-                                      br()
-                     ),
-                     column(8,
-                            fluidRow(
-                              column(6, div(style="text-align: center", bsButton(inputId = 'submit', label = 'Submit Answer', style="primary", disabled=TRUE))),
-                              column(6, div(style="text-align: center", bsButton(inputId = "nextButton",label = "Next Question", style="primary", disabled=TRUE)))
-                            ),
-                            fluidRow(
-                              column(12, div(style="text-align: center", bsButton(inputId="reset", label="Start new game", style="primary")))
-                            )
-                            
-                     )
+               conditionalPanel("output.temp != 2",
+                                conditionalPanel("input.image_click",
+                                                 uiOutput("Question"),
+                                                 uiOutput("CurrentQuestion"),
+                                                 uiOutput("CurrentQuestion.extra"),
+                                                 br(),
+                                                 br(),
+                                                 br()
+                                ),
+                                textOutput("directions"),
+                                br()
+               ),
+               column(8,
+                  fluidRow(
+                    column(6, div(style="text-align: center", bsButton(inputId = 'submit', label = 'Submit Answer', style="primary", disabled=TRUE))),
+                    column(6, div(style="text-align: center", bsButton(inputId = "nextButton",label = "Next Question", style="primary", disabled=TRUE)))
+                  ),
+                  fluidRow(
+                    column(12, div(style="text-align: center", bsButton(inputId="reset", label="Start new game", style="primary")))
+                  )      
+                )
               )
             ),
             fluidRow(
@@ -1668,7 +1685,7 @@ server <- function(session, input, output) {
     
   }, deleteFile = TRUE)
   
-  ######tic-tac-toe
+  ###tic-tac-toe
   
   
   #### question bank ####
