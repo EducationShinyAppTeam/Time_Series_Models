@@ -2,6 +2,7 @@ library(shinydashboard)
 library(shiny)
 library(shinyjs)
 library(shinyBS)
+library(shinyalert)
 library(plotly)
 #library(grid)
 library(stats)
@@ -17,11 +18,12 @@ library(DT)
 #library(V8)
 #library(discrimARTs)
 library(leaflet)
-library(raster)
 library(shinyWidgets)
 library(boastUtils)
 
 
+GRID_SIZE <- 3
+TILE_COUNT <- GRID_SIZE ^ 2
 
 # Define UI for App ----
 ui <- list(
@@ -215,6 +217,7 @@ ui <- list(
           ),
         ),
        
+        #### Set up the Simulation Page ----
         tabItem(tabName = "sim",
           #tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
           h2("Simulation"), 
@@ -319,32 +322,33 @@ ui <- list(
                 )
               ),
               column(width = 8,
-                     fluidRow(
-                       column(12,
-                              plotOutput("plotSIM")
-                       )
-                     ),
-                     fluidRow(
-                       conditionalPanel(
-                         condition="input.models=='ARMA'",
-                         column(width = 6, plotOutput("plot.ACF")),
-                         column(width = 6, plotOutput("plot.PACF"))
-                       )
-                     )
+                fluidRow(
+                  column(width = 12,
+                    plotOutput("plotSIM")
+                  )
+                ),
+                fluidRow(
+                  conditionalPanel(
+                    condition="input.models=='ARMA'",
+                    column(width = 6, plotOutput("plot.ACF")),
+                    column(width = 6, plotOutput("plot.PACF"))
+                  )
+                )
               )
             ),
             
-            fluidRow(column(width = 12,
-                            fluidRow(
-                              conditionalPanel(
-                                condition="input.models!='ARMA'",
-                                fluidRow(
-                                  column(6, plotOutput("plotACF")),
-                                  column(6, plotOutput("plotPACF"))
-                                )
-                              )
-                            )
-            )
+            fluidRow(
+              column(width = 12,
+                fluidRow(
+                  conditionalPanel(
+                    condition="input.models!='ARMA'",
+                    fluidRow(
+                      column(width = 6, plotOutput("plotACF")),
+                      column(width = 6, plotOutput("plotPACF"))
+                    )
+                  )
+                )
+              )
             )
           ),#fluidpage
           
@@ -358,7 +362,7 @@ ui <- list(
           ),
         ),
         
-        #### Datasets ####
+        #### Set up the Data Page ----
         tabItem(tabName = "data",
           h2("Analyzing Real Data"), 
           p("In the first tab, select the data set that you would like to analyze,
@@ -393,52 +397,96 @@ ui <- list(
                 )),
             sidebarLayout(
               sidebarPanel(
-                selectInput("sets",tags$b("Choose a Dataset Below"),
-                            list("Choose"="Choose",
-                                 "Internet Traffic"= "internet",
-                                 "Monthly Traffic Fatalities" = "monthly",
-                                 "varve" = "varve",
-                                 "sheep" = "sheep",
-                                 "Southern Oscillation Index" = "soi",
-                                 "Daily Max Temp State College" = "temperature"
-                            )
+                selectInput(
+                  inputId = "sets",
+                  tags$b("Choose a Dataset Below"),
+                    list("Choose" = "Choose",
+                         "Internet Traffic" = "internet",
+                         "Monthly Traffic Fatalities" = "monthly",
+                         "varve" = "varve",
+                         "sheep" = "sheep",
+                         "Southern Oscillation Index" = "soi",
+                         "Daily Max Temp State College" = "temperature")
                 ),
                 br(),
                 conditionalPanel(
-                  condition = "input.sets!='Choose'",
-                  checkboxInput(inputId="trend", label="Remove trend/non-constant mean in data", value=FALSE),
-                  # bsPopover(id="trend", title = "tit", content = "The trend can only be removed before or after all transformations.", trigger = "hover", placement = "top"),
+                  condition = "input.sets! = 'Choose'",
+                  checkboxInput(
+                    inputId = "trend", 
+                    label = "Remove trend/non-constant mean in data", 
+                    value = FALSE),
+                  # bsPopover(id = "trend", title = "tit", content = "The trend can only be removed before or after all transformations.", trigger = "hover", placement = "top"),
                   conditionalPanel(
                     condition = "input.trend",
-                    tags$div(style="margin-left: 3vw;",
-                             checkboxInput(inputId="trend1", label="Estimate and Remove linear Trend in Data With Regression", value=FALSE),
-                             checkboxInput(inputId="trend2", label="Estimate and Remove Seasonal Trend in Data With Regression", value=FALSE),
-                             checkboxInput(inputId="trend3", label="Remove Seasonal Trend in Data With Cosine Regression", value=FALSE)
+                    tags$div(style = "margin-left: 3vw;",
+                      checkboxInput(
+                        inputId = "trend1", 
+                        label = "Estimate and Remove linear Trend in Data With Regression", 
+                        value = FALSE),
+                      checkboxInput(
+                        inputId = "trend2", 
+                        label = "Estimate and Remove Seasonal Trend in Data With Regression",
+                        value = FALSE),
+                      checkboxInput(
+                        inputId = "trend3", 
+                        label = "Remove Seasonal Trend in Data With Cosine Regression", 
+                        value = FALSE)
                     ),
                     conditionalPanel(
-                      condition="input.sets != 'temperature' && input.sets != 'monthly' && input.sets != 'soi' && (input.trend2 || input.trend3)",
-                      numericInput(inputId="frequency", label="Choose the frequency of the time series", value=1, min=1, max=365)
+                      condition = "input.sets != 'temperature' && input.sets != 'monthly' && input.sets != 'soi' && (input.trend2 || input.trend3)",
+                      numericInput(
+                        inputId = "frequency", 
+                        label = "Choose the frequency of the time series",
+                        value = 1,
+                        min = 1,
+                        max = 365)
                     )
                   ),
-                  checkboxInput(inputId="log", label="Take log transformation of data", value=FALSE),
-                  checkboxInput(inputId="diff", label="Take first difference of data", value=FALSE),
+                  checkboxInput(
+                    inputId = "log",
+                    label = "Take log transformation of data",
+                    value = FALSE),
+                  checkboxInput(
+                    inputId = "diff",
+                    label = "Take first difference of data",
+                    value = FALSE),
                   conditionalPanel(
-                    condition="input.diff",
-                    tags$div(style="margin-left: 3vw;",
-                             checkboxInput(inputId="diff2", label="Take second difference of data", value=FALSE)
+                    condition = "input.diff",
+                    tags$div(
+                      style = "margin-left: 3vw;",
+                        checkboxInput(
+                          inputId = "diff2",
+                          label = "Take second difference of data",
+                          value = FALSE)
                     )
                   ),
-                  checkboxInput(inputId="seas_diff", label="Take first seasonal difference of data", value=FALSE),
+                  checkboxInput(
+                    inputId = "seas_diff",
+                    label = "Take first seasonal difference of data",
+                    value = FALSE),
                   conditionalPanel(
-                    condition="input.seas_diff",
-                    tags$div(style="margin-left: 3vw;",
-                             numericInput(inputId="seas", label="Choose the seasonal period", value=1, min=1, max=30),
-                             checkboxInput(inputId="seas_diff2", label="Take second seasonal difference of data", value=FALSE)
-                    )
+                    condition = "input.seas_diff",
+                    tags$div(style = "margin-left: 3vw;",
+                      numericInput(
+                        inputId = "seas",
+                        label = "Choose the seasonal period",
+                        value = 1,
+                        min = 1,
+                        max = 30),
+                      checkboxInput(
+                        inputId = "seas_diff2",
+                        label = "Take second seasonal difference of data",
+                        value = FALSE)
+                      )
                   ),
-                  div(style = "text-align: center",
+                  div(
+                    style = "text-align: center",
                       div(id = "div",
-                          actionButton("go4", "Next step!", style = "primary", disabled = TRUE)
+                        actionButton(
+                          inputId = "go4", 
+                          label = "Next step!", 
+                          style = "primary", 
+                          disabled = TRUE)
                       )
                     ), 
                   
@@ -461,111 +509,184 @@ ui <- list(
               the arima order and fit a model."),
             fluidRow(
               plotOutput("ACF"),
-              bsPopover(id="ACF", title = "ACF of transformed data", content = "The blue dashed line represents significance bounds for correlation at different lags in the data.", trigger = "hover", placement = "bottom"),
+              bsPopover(
+                id="ACF",
+                title = "ACF of transformed data", 
+                content = "The blue dashed line represents significance bounds
+                for correlation at different lags in the data.", 
+                trigger = "hover", 
+                placement = "bottom"),
               plotOutput("PACF"),
-              bsPopover(id="PACF", title = "PACF of tranformed data", content = "The blue dashed line represents significance bounds for correlation at different lags in the data.", trigger = "hover", placement = "top")
+              bsPopover(
+                id="PACF", 
+                title = "PACF of tranformed data", 
+                content = "The blue dashed line represents significance bounds
+                for correlation at different lags in the data.",
+                trigger = "hover",
+                placement = "top")
             ),
             div(style = "text-align: center",
-                h4('After you are finished making your choices, press the "Next step!" button below to see how good of a fit your model was.')
+                h4('After you are finished making your choices, press the "Next step!"
+                   button below to see how good of a fit your model was.')
             ),
             fluidRow(
               column(4,
-                     numericInput("p.order", "AR part order", value=0, max=10, min=0),
-                     numericInput("q.order", "MA part order", value=0, max=10, min=0),
-                     numericInput("P.order", "Seasonal AR part order", value=0, max=10, min=0),
-                     numericInput("Q.order", "Seasonal MA part order", value=0, max=10, min=0),
-                     numericInput("period", "Seasonal Period", value=0, max=12, min=0)
+                numericInput(
+                  inputId = "p.order", 
+                  label = "AR part order", 
+                  value = 0, 
+                  max = 10,
+                  min = 0),
+                numericInput(
+                  inputId = "q.order",
+                  label = "MA part order",
+                  value = 0,
+                  max = 10,
+                  min = 0),
+                numericInput(
+                  inputId = "P.order",
+                  label = "Seasonal AR part order",
+                  value = 0,
+                  max = 10,
+                  min = 0),
+                numericInput(
+                  inputId = "Q.order",
+                  label = "Seasonal MA part order",
+                  value = 0, 
+                  max = 10,
+                  min = 0),
+                numericInput(
+                  inputId = "period",
+                  label = "Seasonal Period",
+                  value = 0,
+                  max = 12,
+                  min = 0)
               ),
-              column(8,
-                     plotOutput("subsets"),
-                     bsPopover(id="subsets", title = "ARMA subsets", content = "This plot shows the best combinations of ARMA orders using AIC. The greyed squares indicate that the parameter is used in the model.", trigger = "hover", placement = "top")
+              column(width = 8,
+                plotOutput("subsets"),
+                bsPopover(
+                  id = "subsets", 
+                  title = "ARMA subsets", 
+                  content = "This plot shows the best combinations of ARMA orders
+                  using AIC. The greyed squares indicate that the parameter is
+                  used in the model.",
+                  trigger = "hover",
+                  placement = "top")
               ),
               div(style = "text-align: center",
-                  bsButton("go5", "Next step!", style = "primary")
+                bsButton(
+                  inputId = "go5",
+                  label = "Next step!",
+                  style = "primary")
               ), 
               br()
             )
           ),
           tabPanel(title = h4("Forecast"), value = "step3",
-                  fluidRow(
-                    column(11,
-                      p("Below you can see how well you fit the data to a time
-                        series by seeing the resulting forecasts (plotted against
-                        the last 12 observations of the data set, which were hidden
-                        from the initial time series plot), this plot will show
-                        you-in blue-only the final 100 observations in the data set.
-                        You can also observe the correlation structure of the
-                        residuals of the arima fit to see if you were able to fully
-                        explain the correlation with the model. The progress bar
-                        will show you how close you are to the best possible fit
-                        for the data set.")
+            fluidRow(
+              column(width = 11,
+                p("Below you can see how well you fit the data to a time
+                  series by seeing the resulting forecasts (plotted against
+                  the last 12 observations of the data set, which were hidden
+                  from the initial time series plot), this plot will show
+                  you-in blue-only the final 100 observations in the data set.
+                  You can also observe the correlation structure of the
+                  residuals of the arima fit to see if you were able to fully
+                  explain the correlation with the model. The progress bar
+                  will show you how close you are to the best possible fit
+                  for the data set.")
+              )
+            ),
+            fluidRow(
+              div(style = "position:relative; z-index: 950;",
+                  plotlyOutput("forecast")
+              ),
+              br(),
+              # fluidRow(
+              #   div(style = "position:relative; z-index: 900;",
+              #     div(style = "margin-top: -20vh;",
+              #       div(style = "text-align: center",
+              #         imageOutput("bar") #, height = "1000px")
+              #       )
+              #     )
+              #   )
+              # ),
+              
+              wellPanel(fluidRow(
+                #div(style = "position:relative; z-index: 950;",
+                #div(style = "margin-top: -20vh;",
+                column(width = 6, plotOutput("fitQuality1")),
+                bsPopover(
+                  id="fitQuality1",
+                  title = "ACF residuals",
+                  content = "The ACF and PACF of the residuals of the fitted model
+                  can indicate if theres any remaining correlation structure in
+                  the data.",
+                  trigger = "hover",
+                  placement = "top"),
+                column(width = 6, plotOutput("fitQuality2")),
+                bsPopover(
+                  id = "fitQuality2",
+                  title = "PACF residuals",
+                  content = "The ACF and PACF of the residuals of the fitted model
+                  can indicate if theres any remaining correlation structure in the
+                  data.",
+                  trigger = "hover",
+                  placement = "top")
+                #)
+                #)
+              )),
+              fluidRow(
+                div(style = "position:relative; z-index: auto;",
+                div(style = "margin-top: -20vh;",
+                  column(width = 5, plotOutput("bar")),
+                  column(width = 6, 
+                    br(),
+                    br(),
+                    br(),
+                    br(),
+                    br(), #these are necessary
+                    br(),
+                    br(),
+                    br(),
+                    br(),
+                    verbatimTextOutput("feedback", placeholder = TRUE)
                     )
-                  ),
-                  fluidRow(
-                    div(style = "position:relative; z-index: 950;",
-                        plotlyOutput("forecast")
-                    ),
-                    br(),
-                    # fluidRow(
-                    #   div(style = "position:relative; z-index: 900;",
-                    #     div(style = "margin-top: -20vh;",
-                    #       div(style = "text-align: center",
-                    #         imageOutput("bar") #, height = "1000px")
-                    #       )
-                    #     )
-                    #   )
-                    # ),
-                    
-                    wellPanel(fluidRow(
-                      #div(style = "position:relative; z-index: 950;",
-                      #div(style = "margin-top: -20vh;",
-                      column(6, plotOutput("fitQuality1")),
-                      bsPopover(id="fitQuality1", title = "ACF residuals", content = "The ACF and PACF of the residuals of the fitted model can indicate if theres any remaining correlation structure in the data.", trigger = "hover", placement = "top"),
-                      column(6, plotOutput("fitQuality2")),
-                      bsPopover(id="fitQuality2", title = "PACF residuals", content = "The ACF and PACF of the residuals of the fitted model can indicate if theres any remaining correlation structure in the data.", trigger = "hover", placement = "top")
-                      #)
-                      #)
-                    )),
-                    fluidRow(
-                      div(style = "position:relative; z-index: auto;",
-                          div(style = "margin-top: -20vh;",
-                              column(5, plotOutput("bar")),
-                              column(6, 
-                                     br(),
-                                     br(),
-                                     br(),
-                                     br(),
-                                     br(), #these are necessary
-                                     br(),
-                                     br(),
-                                     br(),
-                                     br(),
-                                     verbatimTextOutput("feedback", placeholder = TRUE)
-                              )
-                          )
-                      )
-                      ,
-                      div(style = "position:relative; z-index: auto;",
-                          bsPopover(id="bar", title = "Model fit evaluation", content = "This indicates how well your model was fit. 100 would indicate that your model is as good as can be. 0 would indicate that your model was no better than using just the mean as the predictor.", trigger = "hover", placement = "right")
-                      )
-                    ),
-                    
-                    br(),
-                    
+                  )
+                ),
+                div(
+                  style = "position:relative; z-index: auto;",
+                    bsPopover(
+                      id="bar",
+                      title = "Model fit evaluation",
+                      content = "This indicates how well your model was fit. 100
+                      would indicate that your model is as good as can be. 0 would
+                      indicate that your model was no better than using just the
+                      mean as the predictor.",
+                      trigger = "hover",
+                      placement = "right")
+                )
+              ),
+              
+              br(),
+              
                 )
               )
             ),
           div(style = "text-align: center",
-              bsButton(inputId = "go3",
-                       label = "GO!",
-                       icon("bolt"),
-                       style = "default",
-                       size = "large")
+            bsButton(
+              inputId = "go3",
+              label = "GO!",
+              icon("bolt"),
+              style = "default",
+              size = "large")
           )
         ),
         
-        ##Concept Game tic-tac-toe
+        #### Set up the Game Page ----
         tabItem(tabName = "game",
+          withMathJax(),
+          useShinyalert(),         
           h2("Concept Game"),
           p("Click on desired square, answer the question, then hit submit and
             go to next question."),
@@ -573,50 +694,177 @@ ui <- list(
             if not, it will be an O."),
           p("Try your best to win the game and get 3 X's in a row !"),
           br(), 
-          fluidPage(
-            fluidRow(
-              column(4,
-                 leafletOutput('image'),
-                 br(),
-                 textOutput("warning"),
-                 textOutput("gameMessage")
-              ),
-              column(8,
-               conditionalPanel("output.temp != 2",
-                                conditionalPanel("input.image_click",
-                                                 uiOutput("Question"),
-                                                 uiOutput("CurrentQuestion"),
-                                                 uiOutput("CurrentQuestion.extra"),
-                                                 br(),
-                                                 br(),
-                                                 br()
-                                ),
-                                textOutput("directions"),
-                                br()
-               ),
-               column(8,
-                  fluidRow(
-                    column(6, div(style="text-align: center", bsButton(inputId = 'submit', label = 'Submit Answer', style="primary", disabled=TRUE))),
-                    column(6, div(style="text-align: center", bsButton(inputId = "nextButton",label = "Next Question", style="primary", disabled=TRUE)))
-                  ),
-                  fluidRow(
-                    column(12, div(style="text-align: center", bsButton(inputId="reset", label="Start new game", style="primary")))
-                  )      
-                )
-              )
+          
+          
+          fluidRow(
+            column(4,
+                   leafletOutput('image'),
+                   br(),
+                   textOutput("warning"),
+                   textOutput("gameMessage")
             ),
-            fluidRow(
-              # column(width=12, offset = 6,
-              #        bsButton(inputId="reset", label="Start new game", style="primary")
-              # ),
-              column(12,uiOutput("Feedback"))
+            column(8,
+                   
+                   conditionalPanel("output.temp != 2",
+                                    conditionalPanel("input.image_click",
+                                                     uiOutput("Question"),
+                                                     uiOutput("CurrentQuestion"),
+                                                     uiOutput("CurrentQuestion.extra"),
+                                                     br(),
+                                                     br(),
+                                                     br()
+                                    ),
+                                    textOutput("directions"),
+                                    br()
+                   ),
+                   column(8,
+                          fluidRow(
+                            column(6, div(style="text-align: center", bsButton(inputId = 'submit', label = 'Submit Answer', style="primary", disabled=TRUE))),
+                            column(6, div(style="text-align: center", bsButton(inputId = "nextButton",label = "Next Question", style="primary", disabled=TRUE)))
+                          ),
+                          fluidRow(
+                            column(12, div(style="text-align: center", bsButton(inputId="reset", label="Start new game", style="primary")))
+                          )
+                          
+                   )
             )
+          ),
+          fluidRow(
+            # column(width=12, offset = 6,
+            #        bsButton(inputId="reset", label="Start new game", style="primary")
+            # ),
+            column(12,uiOutput("Feedback"))
+          )
+        ), 
+        
+        #### Set up the References Page ----
+        tabItem(
+          tabName = "references",
+          withMathJax(),
+          h2("References"),
+          p(
+            class = "hangingindent",
+            "Attali, D. and Edwards, T. (2020) shinyalert: Easily Create Pretty
+            Popup Messages (Modals) in ‘Shiny’. R package version 2.0.0.
+            Available from https://cran.r-project.org/package=shinyalert"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Attali, D. (2016). shinyjs: Easily Improve the User Experience of
+            Your Shiny Apps in Seconds. R package version 2.0.0.
+            Available from https://cran.r-project.org/package=shinyjs"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Bache, S. and Wickham, H. (2014). magrittr: A Forward-Pipe Operator
+            for R. R package version 1.5. Available from 
+            https://cran.r-project.org/package=magrittr"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Bailey, E. (2015). shinyBS: Twitter bootstrap components for shiny.
+            (v0.61). [R package]. Available from
+            https://CRAN.R-project.org/package=shinyBS"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Bivand, R., Keitt, T. and Rowlingson, B. (2018). rgdal: Bindings for
+            the ‘Geospatial’ Data Abstraction Library. R package version 1.3-3.
+            Available from https://cran.r-project.org/package=rgdal"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Carey, R. and Hatfield, N. (2020). boastUtils: BOAST Utilities. R 
+            package version 0.1.6.3. Available from 
+            https://github.com/EducationShinyAppTeam/boastUtils"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Chan, K. and Ripley, B. (2018). TSA: Time Series Analysis. R package
+            version 1.3. Available from https://cran.r-project.org/package=TSA"
+          ), 
+          
+          p(
+            class = "hangingindent",
+            "Chang, W., Cheng, J., Allaire, J., Xie, Y. and McPherson, J. (2017).
+            shiny: Web Application Framework for R. R package version 1.6.0.
+            Available from https://cran.r-project.org/package=shiny"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Chang, W. and Ribeiro, B. (2018). shinydashboard: Create Dashboards
+            with ‘Shiny’. R package version 0.7.1 Available from
+            https://cran.r-project.org/package=shinydashboard"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Cheng, J., Karambelkar, B., and Xie, Y. (2018). leaflet: Create 
+            Interactive Web Maps with the JavaScript ‘Leaflet’ Library. R package
+            version 2.0.1.1. Available from https://cran.r-project.org/package=leaflet"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Hijmans, R. (2017). raster: Geographic Data Analysis and Modeling.
+            R package version 2.6-7. Available from
+            https://cran.r-project.org/package=raster"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Perrier, V., Meyer, F. and Granjon, D. (2018). shinyWidgets: Custom
+            Inputs Widgets for Shiny. R package version 0.6.0. Available from
+            https://cran.r-project.org/package=shinyWidgets"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "R Core Team (2018). stats: A language and environment for statistical
+            computing. R Foundation for Statistical Computing, Vienna, Austria.
+            R package version 0.2. Available from
+            https://github.com/arunsrinivasan/cran.stats"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Sievert, C., Parmer, C., Hocking, T., Chamberlain, S., Ram, K., 
+            Corvellec, M. and Despouy, P. (2017). plotly: Create Interactive Web
+            Graphics via ‘plotly.js’. R package version 4.9.3. Available from
+            https://cran.r-project.org/package=plotly"
+          ),
+      
+          p(
+            class = "hangingindent",
+            "Wickham, H. (2016). ggplot2: Elegant Graphics for Data Analysis.
+            Springer-Verlag New York. R package version tidyerse.
+            Available from https://ggplot2.tidyverse.org/"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Wickham, H. and Henry, L. (2018). tidyr: Tidy Messy Data. R package
+            version 1.1.3. Available from https://cran.r-project.org/package=tidyr"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Xie, Y. (2016) . DT: A Wrapper of the JavaScript Library ‘DataTables’.
+            R package version 0.2. Available from https://cran.r-project.org/package=DT"
           )
         )
       )
     )
   )
 )
+
 
 server <- function(session, input, output) {
   
@@ -643,24 +891,37 @@ server <- function(session, input, output) {
       selected = "pre")
   })
   observeEvent(input$go1,{
-    updateTabItems(session, "tabs", "sim")
+    updateTabItems(
+      session = session, 
+      inputId = "tabs", 
+      selected = "sim")
   })
   observeEvent(input$go2,{
-    updateTabItems(session, "tabs", "data")
+    updateTabItems(
+      session = session,
+      inputId = "tabs",
+      selected = "data")
   })
   observeEvent(input$go3,{
-    updateTabItems(session, "tabs", "game")
+    updateTabItems(
+      session = session,
+      inputId = "tabs",
+      selected = "game")
   })
   observeEvent(input$go4,{
     # if(!(input$trend & !input$trend1 & !input$trend2 & !input$trend3)){
-    updateTabsetPanel(session, "tabs2",
-                      selected = "step2"
+    updateTabsetPanel(
+      session = session, 
+      inputId = "tabs2",
+      selected = "step2"
     )
     # }
   })
   observeEvent(input$go5,{
-    updateTabsetPanel(session, "tabs2",
-                      selected = "step3"
+    updateTabsetPanel(
+      session = session,
+      inputId = "tabs2",
+      selected = "step3"
     )
   })
   
@@ -1684,6 +1945,7 @@ server <- function(session, input, output) {
          alt = "This is alternate text")
     
   }, deleteFile = TRUE)
+
   
   ###tic-tac-toe
   
@@ -2217,10 +2479,8 @@ server <- function(session, input, output) {
     container[(length(container)+1)] <<- ifelse(temp[num] == "correct", 1, 0)
     
   })
-  
-  
 }
+
 
 boastUtils::boastApp(ui = ui, server = server)
 
-  
