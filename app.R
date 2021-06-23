@@ -18,6 +18,7 @@ library(DT)
 #library(V8)
 #library(discrimARTs)
 library(leaflet)
+library(raster)
 library(shinyWidgets)
 library(boastUtils)
 
@@ -48,7 +49,7 @@ ui <- list(
     ### Create the sidebar/left navigation menu ----
     dashboardSidebar(
       sidebarMenu(
-        id = "tabs",
+        id = "pages",
         menuItem("Overview", tabName = "overview", icon = icon("dashboard")),
         menuItem("Prerequisite", tabName = "pre", icon = icon("book")),
         menuItem("Simulation", tabName = "sim", icon = icon("wpexplorer")),
@@ -70,13 +71,13 @@ ui <- list(
       tabItems(
         #### Set up the Overview Page ----
         tabItem(tabName = "overview",
-          h1("Times Series Model:"),
-          p("In this app the goal is to become more familiar with time series 
+                h1("Times Series Model:"),
+                p("In this app the goal is to become more familiar with time series 
             analysis."),
-          p("In the three parts of the app, you will explore time series with 
+            p("In the three parts of the app, you will explore time series with 
             simulations, challange yourself with time series analysis, and review
             your knowledge of associated material with a game."),
-          p("In particular, the first part requires students to engage with 
+            p("In particular, the first part requires students to engage with 
             simulations so they could find out how model equations may relate to
             the graphical representation of the time series. The second feature
             walks the user through time series analysis of a selected real world
@@ -84,71 +85,71 @@ ui <- list(
             observe the quality of their model in this analysis. The third feature
             will quiz the user about time series concepts as a part of a fun
             tic-tac-toe game."),
-          br(),
-          
-          h2("Instructions:"),
-          
-          h4("Simulation Exploration:"),
-          tags$ul(
-            tags$li("Use the sliders for the coefficients and explore how changing
+            br(),
+            
+            h2("Instructions:"),
+            
+            h4("Simulation Exploration:"),
+            tags$ul(
+              tags$li("Use the sliders for the coefficients and explore how changing
                     parameter values affects the time series plot."),
-            tags$li("Use the drop down menus and observe how different orders of
+              tags$li("Use the drop down menus and observe how different orders of
                     models effect the autocorrelation function (ACF) and partial
                     autocorrelation function (PACF) plots.")
-          ),
-          br(), 
-          h4("Time Series Analysis with real data:"),
-          
-             tags$li("In the first tab, select the data set that you would like
+            ),
+            br(), 
+            h4("Time Series Analysis with real data:"),
+            
+            tags$li("In the first tab, select the data set that you would like
                      to analyze, and fit transformations until the data seems
                      stationary."),
-             tags$li("Here, you must consider that the last 12 observations of
+            tags$li("Here, you must consider that the last 12 observations of
                      each data set are hidden from the user so that they could
                      be presented in the last tab alongside the user's model's
                      forecasts."),
-             tags$li("For each transformation consider the following:", 
-                tags$ul(
-                  tags$li("The transformations are of the form `seas_diff(diff(log(data)))`,
+            tags$li("For each transformation consider the following:", 
+                    tags$ul(
+                      tags$li("The transformations are of the form `seas_diff(diff(log(data)))`,
                           that is, the log transformation will always be taken first,
                           followed by the difference of lag one, and then the seasonal
                           differencing."),
-                  tags$li("The trend can only be removed before any other transformation,
+                      tags$li("The trend can only be removed before any other transformation,
                           or after all transformations. The trend is removed using
                           regression, and the transformed data is the residuals
                           from that regression."))
-                ),
-          
-          br(), 
-          h4("Time Series Concept Review Game:"),
-             tags$li("Click the tic-tac-toe image to begin."),
-             tags$li("To play the game, you will select the square that you want
+            ),
+            
+            br(), 
+            h4("Time Series Concept Review Game:"),
+            tags$li("Click the tic-tac-toe image to begin."),
+            tags$li("To play the game, you will select the square that you want
                      to place an X."),
-             tags$li("Then you will answer the question that is given, if you get
+            tags$li("Then you will answer the question that is given, if you get
                      it right, an X will go in the square you selected - if not,
                      an O will go in that spot."),
-             tags$li("You can only submit an answer after choosing a spot on the
+            tags$li("You can only submit an answer after choosing a spot on the
                      image."),
-             tags$li("You are playing as the X's, the object of the game is to
+            tags$li("You are playing as the X's, the object of the game is to
                      get 3 X's in a row."),
-             tags$li("You win when 3 X's line up horizontally, vertically, or
+            tags$li("You win when 3 X's line up horizontally, vertically, or
                      diagonally, and you lose when 3 O's line up horizontally,
                      vertically or diagonally, otherwise the game results in a tie."),
-      
-          br(), 
-          br(), 
-          div(style = "text-align: center",
-              bsButton(inputId = "go0", 
-                       label = "GO!",
-                       icon("book"),
-                       style = "default",
-                       size = "large")
-          ),
-          
-          
-          br(), 
-          br(),
-          h2("Acknowledgements:"),
-          p("This app was conceived in its entirety by Ryan Voyack and Yubaihe
+            
+            br(), 
+            br(), 
+            div(style = "text-align: center",
+                bsButton(inputId = "go0", 
+                         label = "GO!",
+                         icon("book"),
+                         style = "default",
+                         size = "large")
+            ),
+            
+            
+            br(), 
+            br(),
+            h2("Acknowledgements:"),
+            p("This app was conceived in its entirety by Ryan Voyack and Yubaihe
             Grace Zhou in June and July of 2018 with Ryan leading on the data
             analysis and game components and Grace leading on the simulation
             components. Special thanks to Saurabh Jugalkishor Jaju from
@@ -161,431 +162,431 @@ ui <- list(
             br(),
             br(),
             div(class = "updated", "Last Update: 5/14/2021 by NJH.")
-          )
-          
+            )
+            
         ),
         
         #### Set up the Prerequisites Page ----
         tabItem(tabName = "pre",
-          h2("Background"),
-            h3("Stationarity:"),
-            p("Diagnostics for stationarity include looking for constant mean
+                h2("Background"),
+                h3("Stationarity:"),
+                p("Diagnostics for stationarity include looking for constant mean
                (or, trend) and variance over time"),
-            tags$ul(
-              tags$li("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
-              tags$li("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
-              tags$li("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
-            ), 
-          
-            h3("Autocorrelation Functions of Stationary Time Series:"),
-            p("We typically trust the dashed lines in the autocorrelation function
+               tags$ul(
+                 tags$li("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
+                 tags$li("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
+                 tags$li("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
+               ), 
+               
+               h3("Autocorrelation Functions of Stationary Time Series:"),
+               p("We typically trust the dashed lines in the autocorrelation function
                (ACF) plots to be the significance cut-off bounds for any lag's
                correlation"),
-            p("In a model with non-zero autoregressive (AR) and moving average
+               p("In a model with non-zero autoregressive (AR) and moving average
                (MA) parts, there is no logical interpretation for both ACFS cutting
                off, thus,"),
-            tags$ul(
-              tags$li("For AR(p) models, the ACF will tail off and the PACF will
+               tags$ul(
+                 tags$li("For AR(p) models, the ACF will tail off and the PACF will
                       cut off after lag p."),
-              tags$li("For MA(q) models, the ACF will cut off after lag q, and
+                 tags$li("For MA(q) models, the ACF will cut off after lag q, and
                       the PACF will tail off."),
-              tags$li("For ARMA(p, q) models, both the ACF and the PACF will both
+                 tags$li("For ARMA(p, q) models, both the ACF and the PACF will both
                       tail off.")
-             ),
-            p("The ARMA subsets plot is not the best tool for determining ARMA(p,q)
+               ),
+               p("The ARMA subsets plot is not the best tool for determining ARMA(p,q)
                orders, and thus will only be used as a tie breaker or guide after
                the ACF and PACF plots have been thoroughly inspected."),
-            br(), 
-            h3("Model Diagnostics:"),
-            p("The ARIMA model aims to forecast future values of a stationary time
+               br(), 
+               h3("Model Diagnostics:"),
+               p("The ARIMA model aims to forecast future values of a stationary time
               series by estimating a mathematical function to explain the underlying
               correlation structure. For this reason, the ACF and PACF of the residuals
               of the ARIMA model that has been fitted should not contain any significant
               remaing correlation."),
-            p("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model."),
-      
-            br(),
-            br(), 
-          
-          div(style = "text-align: center",
-              bsButton(
-                inputId = "go1", 
-                label = "GO!", 
-                icon("wpexplorer"), 
-                style = "default", 
-                size = "large")
-          ),
+              p("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model."),
+              
+              br(),
+              br(), 
+              
+              div(style = "text-align: center",
+                  bsButton(
+                    inputId = "go1", 
+                    label = "GO!", 
+                    icon("wpexplorer"), 
+                    style = "default", 
+                    size = "large")
+              ),
         ),
-       
+        
         #### Set up the Simulation Page ----
         tabItem(tabName = "sim",
-          #tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
-          h2("Simulation"), 
-          p("Use the sliders for the coefficients and explore how changing parameter
+                #tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
+                h2("Simulation"), 
+                p("Use the sliders for the coefficients and explore how changing parameter
             values affects the time series plot."),
-          p("Use the drop down menus and observe how different orders of models
+            p("Use the drop down menus and observe how different orders of models
             effect the autocorrelation function (ACF) and partial autocorrelation
             function (PACF) plots."),
-          br(),
-          fluidPage(
-            fluidRow(
-              column(width = 4,
-                selectInput("models","Models",
-                  list("Autoregressive" = "AR",
-                       "Moving Average" = "MA",
-                       "Autoregressive Moving Average" = "ARMA")
+            br(),
+            fluidPage(
+              fluidRow(
+                column(width = 4,
+                       selectInput("models","Models",
+                                   list("Autoregressive" = "AR",
+                                        "Moving Average" = "MA",
+                                        "Autoregressive Moving Average" = "ARMA")
+                       ),
+                       sliderInput(
+                         inputId = "n",
+                         label = "Sample Size",
+                         min = 10,
+                         max = 1000,
+                         step = 5,
+                         value = 20,
+                         ticks = T
+                       ),
+                       conditionalPanel(
+                         #AR
+                         condition = ("input.models=='AR' || input.models=='ARMA'"),
+                         h4(p("AR(p)")),
+                         
+                         selectInput(
+                           inputId = "p",
+                           label = "p order",
+                           list( "1", "2")
+                         ),
+                         conditionalPanel(
+                           condition = ("input.p == '1' || input.p == '2'"),
+                           #h5(p(withMathJax(textOutput("Phi1")))),
+                           sliderInput(
+                             inputId = "phi1",
+                             label = "Phi1",
+                             min = -0.9,
+                             max = 0.9,
+                             step = 0.1,
+                             value = 0.5,
+                             ticks = T
+                           ),
+                           conditionalPanel(
+                             condition = "input.p == '2'",
+                             
+                             sliderInput("phi2",
+                                         label = "Phi2",
+                                         min = -0.9,
+                                         max = 0.9,
+                                         step = 0.1,
+                                         value = 0,
+                                         ticks = T)
+                           )
+                         )
+                       ),
+                       conditionalPanel(
+                         condition = ("input.models=='ARMA'"),
+                         hr()
+                       ),
+                       conditionalPanel(
+                         #MA
+                         condition = ("input.models=='MA' || input.models=='ARMA'"),
+                         h4(p("MA(q)")),
+                         
+                         selectInput(
+                           inputId = "q",
+                           label = "q order",
+                           list("1","2")
+                         ),
+                         conditionalPanel(
+                           condition = ("input.q == '1' || input.q == '2'"),
+                           #h5(p(withMathJax(textOutput("Phi1")))),
+                           
+                           sliderInput("theta1",
+                                       label = "Theta1",
+                                       min = -0.9,
+                                       max = 0.9,
+                                       step = 0.1,
+                                       value = 0.5,
+                                       ticks = T),
+                           
+                           conditionalPanel(
+                             condition = ("input.q == '2'"),
+                             
+                             sliderInput(
+                               inputId = "theta2",
+                               label = "Theta2",
+                               min = -0.9,
+                               max = 0.5,
+                               step = 0.1,
+                               value = 0.1,
+                               ticks = T
+                             )
+                           )
+                         )
+                       )
                 ),
-                sliderInput(
-                  inputId = "n",
-                  label = "Sample Size",
-                  min = 10,
-                  max = 1000,
-                  step = 5,
-                  value = 20,
-                  ticks = T
-                 ),
-                conditionalPanel(
-                  #AR
-                  condition = ("input.models=='AR' || input.models=='ARMA'"),
-                  h4(p("AR(p)")),
-                   
-                  selectInput(
-                    inputId = "p",
-                    label = "p order",
-                    list( "1", "2")
-                   ),
-                  conditionalPanel(
-                    condition = ("input.p == '1' || input.p == '2'"),
-                    #h5(p(withMathJax(textOutput("Phi1")))),
-                    sliderInput(
-                    inputId = "phi1",
-                    label = "Phi1",
-                    min = -0.9,
-                    max = 0.9,
-                    step = 0.1,
-                    value = 0.5,
-                    ticks = T
-                    ),
-                  conditionalPanel(
-                    condition = "input.p == '2'",
-                   
-                    sliderInput("phi2",
-                      label = "Phi2",
-                      min = -0.9,
-                      max = 0.9,
-                      step = 0.1,
-                      value = 0,
-                      ticks = T)
-                      )
-                    )
-                  ),
-                  conditionalPanel(
-                    condition = ("input.models=='ARMA'"),
-                    hr()
-                  ),
-                  conditionalPanel(
-                    #MA
-                    condition = ("input.models=='MA' || input.models=='ARMA'"),
-                    h4(p("MA(q)")),
-                   
-                    selectInput(
-                      inputId = "q",
-                      label = "q order",
-                      list("1","2")
-                    ),
-                    conditionalPanel(
-                      condition = ("input.q == '1' || input.q == '2'"),
-                      #h5(p(withMathJax(textOutput("Phi1")))),
-                     
-                      sliderInput("theta1",
-                        label = "Theta1",
-                        min = -0.9,
-                        max = 0.9,
-                        step = 0.1,
-                        value = 0.5,
-                        ticks = T),
-                      
-                    conditionalPanel(
-                      condition = ("input.q == '2'"),
-                       
-                      sliderInput(
-                        inputId = "theta2",
-                        label = "Theta2",
-                        min = -0.9,
-                        max = 0.5,
-                        step = 0.1,
-                        value = 0.1,
-                        ticks = T
-                      )
-                    )
-                  )
+                column(width = 8,
+                       fluidRow(
+                         column(width = 12,
+                                plotOutput("plotSIM")
+                         )
+                       ),
+                       fluidRow(
+                         conditionalPanel(
+                           condition="input.models=='ARMA'",
+                           column(width = 6, plotOutput("plot.ACF")),
+                           column(width = 6, plotOutput("plot.PACF"))
+                         )
+                       )
                 )
               ),
-              column(width = 8,
-                fluidRow(
-                  column(width = 12,
-                    plotOutput("plotSIM")
-                  )
-                ),
-                fluidRow(
-                  conditionalPanel(
-                    condition="input.models=='ARMA'",
-                    column(width = 6, plotOutput("plot.ACF")),
-                    column(width = 6, plotOutput("plot.PACF"))
-                  )
+              
+              fluidRow(
+                column(width = 12,
+                       fluidRow(
+                         conditionalPanel(
+                           condition="input.models!='ARMA'",
+                           fluidRow(
+                             column(width = 6, plotOutput("plotACF")),
+                             column(width = 6, plotOutput("plotPACF"))
+                           )
+                         )
+                       )
                 )
               )
-            ),
+            ),#fluidpage
             
-            fluidRow(
-              column(width = 12,
-                fluidRow(
-                  conditionalPanel(
-                    condition="input.models!='ARMA'",
-                    fluidRow(
-                      column(width = 6, plotOutput("plotACF")),
-                      column(width = 6, plotOutput("plotPACF"))
-                    )
-                  )
-                )
-              )
-            )
-          ),#fluidpage
-          
-          div(style = "text-align: center",
-              bsButton(
-                inputId = "go2", 
-                label = "GO!", 
-                icon("cogs"), 
-                style = "default", 
-                size = "large")
-          ),
+            div(style = "text-align: center",
+                bsButton(
+                  inputId = "go2", 
+                  label = "GO!", 
+                  icon("cogs"), 
+                  style = "default", 
+                  size = "large")
+            ),
         ),
         
         #### Set up the Data Page ----
         tabItem(tabName = "data",
-          h2("Analyzing Real Data"), 
-          p("In the first tab, select the data set that you would like to analyze,
+                h2("Analyzing Real Data"), 
+                p("In the first tab, select the data set that you would like to analyze,
             and fit transformations until the data seems stationary."),
-          p("Here, you must consider that the last 12 observations of each data
+            p("Here, you must consider that the last 12 observations of each data
             set are hidden from the user so that they could be presented in the
             last tab alongside the user's model's forecasts."), 
-          p("For each transformation consider the following:", 
-            tags$ul(
-              tags$li("The transformations are of the form `seas_diff(diff(log(data)))`,
+            p("For each transformation consider the following:", 
+              tags$ul(
+                tags$li("The transformations are of the form `seas_diff(diff(log(data)))`,
                       that is, the log transformation will always be taken first,
                       followed by the difference of lag one, and then the seasonal
                       differencing."), 
-              tags$li("The trend can only be removed before any other transformation,
+                tags$li("The trend can only be removed before any other transformation,
                       or after all transformations. The trend is removed using
                       regression, and the transformed data is the residuals from
                       that regression.")
-            )
-          ),
-          br(), 
-          tabsetPanel(id = "tabs2",
-          tabPanel(title = h4("Achieving Stationarity"), value = "step1",
-            p(
-              tags$ul(
-                tags$li("To begin, please choose from of the data sets below any
+              )
+            ),
+            br(), 
+            tabsetPanel(id = "tabs2",
+                        tabPanel(title = h4("Achieving Stationarity"), value = "step1",
+                                 p(
+                                   tags$ul(
+                                     tags$li("To begin, please choose from of the data sets below any
                         one that you would like."),
-                tags$li("Use the checkbox options to make your data look satisfactorily
+                        tags$li("Use the checkbox options to make your data look satisfactorily
                       stationary."),
-                tags$li("The first part of our analysis is achieving stationarity,
+                      tags$li("The first part of our analysis is achieving stationarity,
                         so that you can correctly judge the correlation structure
                         to assign to the arima model.")
-                )),
-            sidebarLayout(
-              sidebarPanel(
-                selectInput(
-                  inputId = "sets",
-                  tags$b("Choose a Dataset Below"),
-                    list("Choose" = "Choose",
-                         "Internet Traffic" = "internet",
-                         "Monthly Traffic Fatalities" = "monthly",
-                         "varve" = "varve",
-                         "sheep" = "sheep",
-                         "Southern Oscillation Index" = "soi",
-                         "Daily Max Temp State College" = "temperature")
-                ),
-                br(),
-                conditionalPanel(
-                  condition = "input.sets! = 'Choose'",
-                  checkboxInput(
-                    inputId = "trend", 
-                    label = "Remove trend/non-constant mean in data", 
-                    value = FALSE),
-                  # bsPopover(id = "trend", title = "tit", content = "The trend can only be removed before or after all transformations.", trigger = "hover", placement = "top"),
-                  conditionalPanel(
-                    condition = "input.trend",
-                    tags$div(style = "margin-left: 3vw;",
-                      checkboxInput(
-                        inputId = "trend1", 
-                        label = "Estimate and Remove linear Trend in Data With Regression", 
-                        value = FALSE),
-                      checkboxInput(
-                        inputId = "trend2", 
-                        label = "Estimate and Remove Seasonal Trend in Data With Regression",
-                        value = FALSE),
-                      checkboxInput(
-                        inputId = "trend3", 
-                        label = "Remove Seasonal Trend in Data With Cosine Regression", 
-                        value = FALSE)
-                    ),
-                    conditionalPanel(
-                      condition = "input.sets != 'temperature' && input.sets != 'monthly' && input.sets != 'soi' && (input.trend2 || input.trend3)",
-                      numericInput(
-                        inputId = "frequency", 
-                        label = "Choose the frequency of the time series",
-                        value = 1,
-                        min = 1,
-                        max = 365)
-                    )
-                  ),
-                  checkboxInput(
-                    inputId = "log",
-                    label = "Take log transformation of data",
-                    value = FALSE),
-                  checkboxInput(
-                    inputId = "diff",
-                    label = "Take first difference of data",
-                    value = FALSE),
-                  conditionalPanel(
-                    condition = "input.diff",
-                    tags$div(
-                      style = "margin-left: 3vw;",
-                        checkboxInput(
-                          inputId = "diff2",
-                          label = "Take second difference of data",
-                          value = FALSE)
-                    )
-                  ),
-                  checkboxInput(
-                    inputId = "seas_diff",
-                    label = "Take first seasonal difference of data",
-                    value = FALSE),
-                  conditionalPanel(
-                    condition = "input.seas_diff",
-                    tags$div(style = "margin-left: 3vw;",
-                      numericInput(
-                        inputId = "seas",
-                        label = "Choose the seasonal period",
-                        value = 1,
-                        min = 1,
-                        max = 30),
-                      checkboxInput(
-                        inputId = "seas_diff2",
-                        label = "Take second seasonal difference of data",
-                        value = FALSE)
+                                   )),
+                      sidebarLayout(
+                        sidebarPanel(
+                          selectInput(
+                            inputId = "sets",
+                            tags$b("Choose a Dataset Below"),
+                            list("Choose" = "Choose",
+                                 "Internet Traffic" = "internet",
+                                 "Monthly Traffic Fatalities" = "monthly",
+                                 "varve" = "varve",
+                                 "sheep" = "sheep",
+                                 "Southern Oscillation Index" = "soi",
+                                 "Daily Max Temp State College" = "temperature")
+                          ),
+                          br(),
+                          conditionalPanel(
+                            condition = "input.sets! = 'Choose'",
+                            checkboxInput(
+                              inputId = "trend", 
+                              label = "Remove trend/non-constant mean in data", 
+                              value = FALSE),
+                            # bsPopover(id = "trend", title = "tit", content = "The trend can only be removed before or after all transformations.", trigger = "hover", placement = "top"),
+                            conditionalPanel(
+                              condition = "input.trend",
+                              tags$div(style = "margin-left: 3vw;",
+                                       checkboxInput(
+                                         inputId = "trend1", 
+                                         label = "Estimate and Remove linear Trend in Data With Regression", 
+                                         value = FALSE),
+                                       checkboxInput(
+                                         inputId = "trend2", 
+                                         label = "Estimate and Remove Seasonal Trend in Data With Regression",
+                                         value = FALSE),
+                                       checkboxInput(
+                                         inputId = "trend3", 
+                                         label = "Remove Seasonal Trend in Data With Cosine Regression", 
+                                         value = FALSE)
+                              ),
+                              conditionalPanel(
+                                condition = "input.sets != 'temperature' && input.sets != 'monthly' && input.sets != 'soi' && (input.trend2 || input.trend3)",
+                                numericInput(
+                                  inputId = "frequency", 
+                                  label = "Choose the frequency of the time series",
+                                  value = 1,
+                                  min = 1,
+                                  max = 365)
+                              )
+                            ),
+                            checkboxInput(
+                              inputId = "log",
+                              label = "Take log transformation of data",
+                              value = FALSE),
+                            checkboxInput(
+                              inputId = "diff",
+                              label = "Take first difference of data",
+                              value = FALSE),
+                            conditionalPanel(
+                              condition = "input.diff",
+                              tags$div(
+                                style = "margin-left: 3vw;",
+                                checkboxInput(
+                                  inputId = "diff2",
+                                  label = "Take second difference of data",
+                                  value = FALSE)
+                              )
+                            ),
+                            checkboxInput(
+                              inputId = "seas_diff",
+                              label = "Take first seasonal difference of data",
+                              value = FALSE),
+                            conditionalPanel(
+                              condition = "input.seas_diff",
+                              tags$div(style = "margin-left: 3vw;",
+                                       numericInput(
+                                         inputId = "seas",
+                                         label = "Choose the seasonal period",
+                                         value = 1,
+                                         min = 1,
+                                         max = 30),
+                                       checkboxInput(
+                                         inputId = "seas_diff2",
+                                         label = "Take second seasonal difference of data",
+                                         value = FALSE)
+                              )
+                            ),
+                            div(
+                              style = "text-align: center",
+                              div(id = "div",
+                                  actionButton(
+                                    inputId = "go4", 
+                                    label = "Next step!", 
+                                    style = "primary", 
+                                    disabled = TRUE)
+                              )
+                            ), 
+                            
+                            br(), 
+                          )
+                        ),
+                        mainPanel(
+                          conditionalPanel(
+                            condition = "input.sets!='Choose'",
+                            plotOutput("original"),
+                            uiOutput("cite"),
+                            plotOutput("transform")
+                          )
+                        )
                       )
-                  ),
-                  div(
-                    style = "text-align: center",
-                      div(id = "div",
-                        actionButton(
-                          inputId = "go4", 
-                          label = "Next step!", 
-                          style = "primary", 
-                          disabled = TRUE)
-                      )
-                    ), 
-                  
-                  br(), 
-                  )
-                ),
-              mainPanel(
-                conditionalPanel(
-                  condition = "input.sets!='Choose'",
-                  plotOutput("original"),
-                  uiOutput("cite"),
-                  plotOutput("transform")
-                )
-              )
-            )
-          ),
-          tabPanel(title = h4("Determine ARMA order"), value = "step2",
-            p("Now, that you have made your data stationary, you can inspect the
+                        ),
+                      tabPanel(title = h4("Determine ARMA order"), value = "step2",
+                               p("Now, that you have made your data stationary, you can inspect the
               resulting acf plots as well as the ARMAsubsets plot below to determine
               the arima order and fit a model."),
-            fluidRow(
-              plotOutput("ACF"),
-              bsPopover(
-                id="ACF",
-                title = "ACF of transformed data", 
-                content = "The blue dashed line represents significance bounds
+              fluidRow(
+                plotOutput("ACF"),
+                bsPopover(
+                  id="ACF",
+                  title = "ACF of transformed data", 
+                  content = "The blue dashed line represents significance bounds
                 for correlation at different lags in the data.", 
                 trigger = "hover", 
                 placement = "bottom"),
-              plotOutput("PACF"),
-              bsPopover(
-                id="PACF", 
-                title = "PACF of tranformed data", 
-                content = "The blue dashed line represents significance bounds
+                plotOutput("PACF"),
+                bsPopover(
+                  id="PACF", 
+                  title = "PACF of tranformed data", 
+                  content = "The blue dashed line represents significance bounds
                 for correlation at different lags in the data.",
                 trigger = "hover",
                 placement = "top")
-            ),
-            div(style = "text-align: center",
-                h4('After you are finished making your choices, press the "Next step!"
-                   button below to see how good of a fit your model was.')
-            ),
-            fluidRow(
-              column(4,
-                numericInput(
-                  inputId = "p.order", 
-                  label = "AR part order", 
-                  value = 0, 
-                  max = 10,
-                  min = 0),
-                numericInput(
-                  inputId = "q.order",
-                  label = "MA part order",
-                  value = 0,
-                  max = 10,
-                  min = 0),
-                numericInput(
-                  inputId = "P.order",
-                  label = "Seasonal AR part order",
-                  value = 0,
-                  max = 10,
-                  min = 0),
-                numericInput(
-                  inputId = "Q.order",
-                  label = "Seasonal MA part order",
-                  value = 0, 
-                  max = 10,
-                  min = 0),
-                numericInput(
-                  inputId = "period",
-                  label = "Seasonal Period",
-                  value = 0,
-                  max = 12,
-                  min = 0)
               ),
-              column(width = 8,
-                plotOutput("subsets"),
-                bsPopover(
-                  id = "subsets", 
-                  title = "ARMA subsets", 
-                  content = "This plot shows the best combinations of ARMA orders
+              div(style = "text-align: center",
+                  h4('After you are finished making your choices, press the "Next step!"
+                   button below to see how good of a fit your model was.')
+              ),
+              fluidRow(
+                column(4,
+                       numericInput(
+                         inputId = "p.order", 
+                         label = "AR part order", 
+                         value = 0, 
+                         max = 10,
+                         min = 0),
+                       numericInput(
+                         inputId = "q.order",
+                         label = "MA part order",
+                         value = 0,
+                         max = 10,
+                         min = 0),
+                       numericInput(
+                         inputId = "P.order",
+                         label = "Seasonal AR part order",
+                         value = 0,
+                         max = 10,
+                         min = 0),
+                       numericInput(
+                         inputId = "Q.order",
+                         label = "Seasonal MA part order",
+                         value = 0, 
+                         max = 10,
+                         min = 0),
+                       numericInput(
+                         inputId = "period",
+                         label = "Seasonal Period",
+                         value = 0,
+                         max = 12,
+                         min = 0)
+                ),
+                column(width = 8,
+                       plotOutput("subsets"),
+                       bsPopover(
+                         id = "subsets", 
+                         title = "ARMA subsets", 
+                         content = "This plot shows the best combinations of ARMA orders
                   using AIC. The greyed squares indicate that the parameter is
                   used in the model.",
                   trigger = "hover",
                   placement = "top")
-              ),
-              div(style = "text-align: center",
-                bsButton(
-                  inputId = "go5",
-                  label = "Next step!",
-                  style = "primary")
-              ), 
-              br()
-            )
-          ),
-          tabPanel(title = h4("Forecast"), value = "step3",
-            fluidRow(
-              column(width = 11,
-                p("Below you can see how well you fit the data to a time
+                ),
+                div(style = "text-align: center",
+                    bsButton(
+                      inputId = "go5",
+                      label = "Next step!",
+                      style = "primary")
+                ), 
+                br()
+              )
+                      ),
+              tabPanel(title = h4("Forecast"), value = "step3",
+                       fluidRow(
+                         column(width = 11,
+                                p("Below you can see how well you fit the data to a time
                   series by seeing the resulting forecasts (plotted against
                   the last 12 observations of the data set, which were hidden
                   from the initial time series plot), this plot will show
@@ -595,269 +596,140 @@ ui <- list(
                   explain the correlation with the model. The progress bar
                   will show you how close you are to the best possible fit
                   for the data set.")
-              )
-            ),
-            fluidRow(
-              div(style = "position:relative; z-index: 950;",
-                  plotlyOutput("forecast")
-              ),
-              br(),
-              # fluidRow(
-              #   div(style = "position:relative; z-index: 900;",
-              #     div(style = "margin-top: -20vh;",
-              #       div(style = "text-align: center",
-              #         imageOutput("bar") #, height = "1000px")
-              #       )
-              #     )
-              #   )
-              # ),
-              
-              wellPanel(fluidRow(
-                #div(style = "position:relative; z-index: 950;",
-                #div(style = "margin-top: -20vh;",
-                column(width = 6, plotOutput("fitQuality1")),
-                bsPopover(
-                  id="fitQuality1",
-                  title = "ACF residuals",
-                  content = "The ACF and PACF of the residuals of the fitted model
+                         )
+                       ),
+                  fluidRow(
+                    div(style = "position:relative; z-index: 950;",
+                        plotlyOutput("forecast")
+                    ),
+                    br(),
+                    # fluidRow(
+                    #   div(style = "position:relative; z-index: 900;",
+                    #     div(style = "margin-top: -20vh;",
+                    #       div(style = "text-align: center",
+                    #         imageOutput("bar") #, height = "1000px")
+                    #       )
+                    #     )
+                    #   )
+                    # ),
+                    
+                    wellPanel(fluidRow(
+                      #div(style = "position:relative; z-index: 950;",
+                      #div(style = "margin-top: -20vh;",
+                      column(width = 6, plotOutput("fitQuality1")),
+                      bsPopover(
+                        id="fitQuality1",
+                        title = "ACF residuals",
+                        content = "The ACF and PACF of the residuals of the fitted model
                   can indicate if theres any remaining correlation structure in
                   the data.",
                   trigger = "hover",
                   placement = "top"),
-                column(width = 6, plotOutput("fitQuality2")),
-                bsPopover(
-                  id = "fitQuality2",
-                  title = "PACF residuals",
-                  content = "The ACF and PACF of the residuals of the fitted model
+                  column(width = 6, plotOutput("fitQuality2")),
+                  bsPopover(
+                    id = "fitQuality2",
+                    title = "PACF residuals",
+                    content = "The ACF and PACF of the residuals of the fitted model
                   can indicate if theres any remaining correlation structure in the
                   data.",
                   trigger = "hover",
                   placement = "top")
-                #)
-                #)
-              )),
-              fluidRow(
-                div(style = "position:relative; z-index: auto;",
-                div(style = "margin-top: -20vh;",
-                  column(width = 5, plotOutput("bar")),
-                  column(width = 6, 
-                    br(),
-                    br(),
-                    br(),
-                    br(),
-                    br(), #these are necessary
-                    br(),
-                    br(),
-                    br(),
-                    br(),
-                    verbatimTextOutput("feedback", placeholder = TRUE)
-                    )
-                  )
-                ),
-                div(
-                  style = "position:relative; z-index: auto;",
-                    bsPopover(
-                      id="bar",
-                      title = "Model fit evaluation",
-                      content = "This indicates how well your model was fit. 100
+                  #)
+                  #)
+                    )),
+                  fluidRow(
+                    div(style = "position:relative; z-index: auto;",
+                        div(style = "margin-top: -20vh;",
+                            column(width = 5, plotOutput("bar")),
+                            column(width = 6, 
+                                   br(),
+                                   br(),
+                                   br(),
+                                   br(),
+                                   br(), #these are necessary
+                                   br(),
+                                   br(),
+                                   br(),
+                                   br(),
+                                   verbatimTextOutput("feedback", placeholder = TRUE)
+                            )
+                        )
+                    ),
+                    div(
+                      style = "position:relative; z-index: auto;",
+                      bsPopover(
+                        id="bar",
+                        title = "Model fit evaluation",
+                        content = "This indicates how well your model was fit. 100
                       would indicate that your model is as good as can be. 0 would
                       indicate that your model was no better than using just the
                       mean as the predictor.",
                       trigger = "hover",
                       placement = "right")
-                )
-              ),
-              
-              br(),
-              
-                )
+                    )
+                  ),
+                  
+                  br(),
+                  
+                  )
               )
             ),
-          div(style = "text-align: center",
-            bsButton(
-              inputId = "go3",
-              label = "GO!",
-              icon("bolt"),
-              style = "default",
-              size = "large")
-          )
+            div(style = "text-align: center",
+                bsButton(
+                  inputId = "go3",
+                  label = "GO!",
+                  icon("bolt"),
+                  style = "default",
+                  size = "large")
+            )
         ),
         
         #### Set up the Game Page ----
         tabItem(tabName = "game",
-          withMathJax(),
-          useShinyalert(),         
-          h2("Concept Game"),
-          p("Click on desired square, answer the question, then hit submit and
+                withMathJax(),
+                useShinyalert(),         
+                h2("Concept Game"),
+                p("Click on desired square, answer the question, then hit submit and
             go to next question."),
-          p("If you answer correctly, you will receive an X in the square you chose,
-            if not, it will be an O."),
+            p("If you answer correctly, you will receive an X in the square you chose,
+          if not, it will be an O."),
           p("Try your best to win the game and get 3 X's in a row !"),
           br(), 
           
-          
+          uiOutput("player"),
           fluidRow(
-            column(4,
-                   leafletOutput('image'),
-                   br(),
-                   textOutput("warning"),
-                   textOutput("gameMessage")
+            div(
+              class = "col-sm-12 col-md-4",
+              h3("Game Board"),
+              br(),
+              uiOutput("gameBoard", class = "game-board")
             ),
-            column(8,
-                   
-                   conditionalPanel("output.temp != 2",
-                                    conditionalPanel("input.image_click",
-                                                     uiOutput("Question"),
-                                                     uiOutput("CurrentQuestion"),
-                                                     uiOutput("CurrentQuestion.extra"),
-                                                     br(),
-                                                     br(),
-                                                     br()
-                                    ),
-                                    textOutput("directions"),
-                                    br()
-                   ),
-                   column(8,
-                          fluidRow(
-                            column(6, div(style="text-align: center", bsButton(inputId = 'submit', label = 'Submit Answer', style="primary", disabled=TRUE))),
-                            column(6, div(style="text-align: center", bsButton(inputId = "nextButton",label = "Next Question", style="primary", disabled=TRUE)))
-                          ),
-                          fluidRow(
-                            column(12, div(style="text-align: center", bsButton(inputId="reset", label="Start new game", style="primary")))
-                          )
-                          
-                   )
+            div(
+              class = "col-sm-12 col-md-8",
+              h3("Question"),
+              withMathJax(uiOutput("question")),
+              uiOutput("extraOutput"),
+              h3("Answer"),
+              uiOutput("answer"),
+              bsButton(
+                inputId = "submit",
+                label = "Submit",
+                size = "large",
+                style = "default",
+                disabled = TRUE
+              ),
+              bsButton(
+                inputId = "reset",
+                label = "Reset Game",
+                color = "primary",
+                size = "large",
+                style = "default"
+              ),
+              br(),
+              #These two triggers help with MathJax re-rendering
+              uiOutput("trigger1"),
+              uiOutput("trigger2")
             )
-          ),
-          fluidRow(
-            # column(width=12, offset = 6,
-            #        bsButton(inputId="reset", label="Start new game", style="primary")
-            # ),
-            column(12,uiOutput("Feedback"))
-          )
-        ), 
-        
-        #### Set up the References Page ----
-        tabItem(
-          tabName = "references",
-          withMathJax(),
-          h2("References"),
-          p(
-            class = "hangingindent",
-            "Attali, D. and Edwards, T. (2020) shinyalert: Easily Create Pretty
-            Popup Messages (Modals) in ‘Shiny’. R package version 2.0.0.
-            Available from https://cran.r-project.org/package=shinyalert"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Attali, D. (2016). shinyjs: Easily Improve the User Experience of
-            Your Shiny Apps in Seconds. R package version 2.0.0.
-            Available from https://cran.r-project.org/package=shinyjs"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Bache, S. and Wickham, H. (2014). magrittr: A Forward-Pipe Operator
-            for R. R package version 1.5. Available from 
-            https://cran.r-project.org/package=magrittr"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Bailey, E. (2015). shinyBS: Twitter bootstrap components for shiny.
-            (v0.61). [R package]. Available from
-            https://CRAN.R-project.org/package=shinyBS"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Bivand, R., Keitt, T. and Rowlingson, B. (2018). rgdal: Bindings for
-            the ‘Geospatial’ Data Abstraction Library. R package version 1.3-3.
-            Available from https://cran.r-project.org/package=rgdal"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Carey, R. and Hatfield, N. (2020). boastUtils: BOAST Utilities. R 
-            package version 0.1.6.3. Available from 
-            https://github.com/EducationShinyAppTeam/boastUtils"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Chan, K. and Ripley, B. (2018). TSA: Time Series Analysis. R package
-            version 1.3. Available from https://cran.r-project.org/package=TSA"
-          ), 
-          
-          p(
-            class = "hangingindent",
-            "Chang, W., Cheng, J., Allaire, J., Xie, Y. and McPherson, J. (2017).
-            shiny: Web Application Framework for R. R package version 1.6.0.
-            Available from https://cran.r-project.org/package=shiny"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Chang, W. and Ribeiro, B. (2018). shinydashboard: Create Dashboards
-            with ‘Shiny’. R package version 0.7.1 Available from
-            https://cran.r-project.org/package=shinydashboard"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Cheng, J., Karambelkar, B., and Xie, Y. (2018). leaflet: Create 
-            Interactive Web Maps with the JavaScript ‘Leaflet’ Library. R package
-            version 2.0.1.1. Available from https://cran.r-project.org/package=leaflet"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Hijmans, R. (2017). raster: Geographic Data Analysis and Modeling.
-            R package version 2.6-7. Available from
-            https://cran.r-project.org/package=raster"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Perrier, V., Meyer, F. and Granjon, D. (2018). shinyWidgets: Custom
-            Inputs Widgets for Shiny. R package version 0.6.0. Available from
-            https://cran.r-project.org/package=shinyWidgets"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "R Core Team (2018). stats: A language and environment for statistical
-            computing. R Foundation for Statistical Computing, Vienna, Austria.
-            R package version 0.2. Available from
-            https://github.com/arunsrinivasan/cran.stats"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Sievert, C., Parmer, C., Hocking, T., Chamberlain, S., Ram, K., 
-            Corvellec, M. and Despouy, P. (2017). plotly: Create Interactive Web
-            Graphics via ‘plotly.js’. R package version 4.9.3. Available from
-            https://cran.r-project.org/package=plotly"
-          ),
-      
-          p(
-            class = "hangingindent",
-            "Wickham, H. (2016). ggplot2: Elegant Graphics for Data Analysis.
-            Springer-Verlag New York. R package version tidyerse.
-            Available from https://ggplot2.tidyverse.org/"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Wickham, H. and Henry, L. (2018). tidyr: Tidy Messy Data. R package
-            version 1.1.3. Available from https://cran.r-project.org/package=tidyr"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Xie, Y. (2016) . DT: A Wrapper of the JavaScript Library ‘DataTables’.
-            R package version 0.2. Available from https://cran.r-project.org/package=DT"
           )
         )
       )
@@ -865,6 +737,7 @@ ui <- list(
   )
 )
 
+### Set up Server ----
 
 server <- function(session, input, output) {
   
@@ -887,25 +760,25 @@ server <- function(session, input, output) {
   observeEvent(input$go0,{
     updateTabItems(
       session = session, 
-      inputId = "tabs", 
+      inputId = "pages", 
       selected = "pre")
   })
   observeEvent(input$go1,{
     updateTabItems(
       session = session, 
-      inputId = "tabs", 
+      inputId = "pages", 
       selected = "sim")
   })
   observeEvent(input$go2,{
     updateTabItems(
       session = session,
-      inputId = "tabs",
+      inputId = "pages",
       selected = "data")
   })
   observeEvent(input$go3,{
     updateTabItems(
       session = session,
-      inputId = "tabs",
+      inputId = "pages",
       selected = "game")
   })
   observeEvent(input$go4,{
@@ -927,7 +800,7 @@ server <- function(session, input, output) {
   
   
   ####### SIMULATED #######
-
+  
   #make sure higher order models are stationary
   observeEvent(input$phi1, {
     if(input$p == '1'){return(NULL)}
@@ -1945,542 +1818,1023 @@ server <- function(session, input, output) {
          alt = "This is alternate text")
     
   }, deleteFile = TRUE)
-
-  
-  ###tic-tac-toe
   
   
-  #### question bank ####
-  bank <- read.csv('questions.csv', stringsAsFactors = FALSE)
-  bank <- bank[,c(1:3,5:10,12)]
-  Qs <- nrow(bank)
+  ###tic-tac-toe ----
+  # Variables
+  activeBtn <- NA
+  activeQuestion <- NA
+  player <- NA
+  opponent <- NA
+  scoreMatrix <-
+    matrix(
+      data = rep.int(0, times = TILE_COUNT),
+      nrow = GRID_SIZE,
+      ncol = GRID_SIZE
+    )
   
+  gameProgress <- FALSE
   
-  ######## MY SERVER CODE ##########
-  
-  #setwd("~/PSU (courses,etc) & Act-Sci (exams, etc)/shiny research/BOAST-EstimationTesting shiny")
-  #the coordinates (sizing attributes) below are hard coded to work with the X and O images that I created/am currently using
-  X.icon <- makeIcon(iconUrl = 'X.PNG', iconWidth = 95) #, iconHeight = 95)
-  O.icon <- makeIcon(iconUrl = 'O.PNG', iconWidth = 105) #, iconHeight = 105)
-  value <- matrix(rep(-3,9),3,3)
-  values <- list(value) # 
-  container <- c() # contains right or wrong answers after submit button is pressed 
-  XsAndOs <- list()
-  resolved <- c(rep(FALSE, Qs))
-  #lists <- reactiveValues(container <- c(),values <- list(),value <- NULL)
-  sr1.1=Polygon(cbind(c(0.5,0.5,3.5,3.5), c(2.5,1.5,1.5,2.5))) # inner, middle horizontal lines
-  sr1.2=Polygon(cbind(c(0.5,0.5,3.5,3.5), c(2.5,3.5,3.5,2.5))) # inner, horizontal lines
-  sr1.3=Polygon(cbind(c(0.5,0.5,3.5,3.5), c(0.5,1.5,1.5,0.5))) # inner, horizontal lines
-  sr2=Polygon(cbind(c(1.5,1.5,2.5,2.5), c(3.5,0.5,0.5,3.5)))
-  sr3=Polygon(cbind(c(0.5,0.5,0.5,3.5), c(0.52,3.47,0.5,0.5))) #outer 
-  sr4=Polygon(cbind(c(3.5,3.5,0.5,3.5), c(0.52,3.47,3.5,3.5))) #square
-  srs1.1=Polygons(list(sr1.1), 's1.1')
-  srs1.2=Polygons(list(sr1.2), 's1.2')
-  srs1.3=Polygons(list(sr1.3), 's1.3')
-  srs2=Polygons(list(sr2), 's2')
-  srs3=Polygons(list(sr3), 's3')
-  srs4=Polygons(list(sr4), 's4')
-  #srs1.2,srs1.3
-  spp = SpatialPolygons(list(srs1.1,srs2,srs3,srs4), 1:4)
-  #spp = SpatialPolygons(list(srs3,srs4), 1:2)
-  
-  r <- raster(xmn = 0.5, xmx = 3.5, ymn = 0.5, ymx = 3.5, nrows = 3, ncols = 3)
-  values(r) <- matrix(1:9, nrow(r), ncol(r), byrow = TRUE)
-  crs(r) <- CRS("+init=epsg:4326")
-  new.board <- leaflet(options = leafletOptions(zoomControl = FALSE, doubleClickZoom = FALSE, minZoom = 7, maxZoom = 7, dragging = FALSE)) %>%  addPolygons(data=spp) %>% addRasterImage(r, colors="Set3")
-  # %>% addTiles()
-  line <- function(){
-    #recall, in the value matrix, zero's represent O's, or wrong answers
-    for(i in 1:3){
-      total.1 <- 0 ; total.2 <- 0
-      for(j in 1:3){
-        total.1 <- total.1 + value[i, j]
-        total.2 <- total.2 + value[j, i]
-      }
-      if(total.1==0 | total.2==0 | total.1==3 | total.2==3){
-        break
-      }
-    }
-    total.3 <- value[1, 1] + value[2, 2] + value[3, 3]
-    total.4 <- value[1, 3] + value[2, 2] + value[3, 1]
+  # Helper Functions
+  .tileCoordinates <- function(tile = NULL, index = NULL) {
+    row <- -1
+    col <- -1
     
-    #if the game has been won:
-    if(total.1==0 | total.2==0 | total.3==0 | total.4==0 | total.1==3 | total.2==3 | total.3==3 | total.4==3){
-      #place.na[!is.na(place.na)] <<- NA
-      if(total.1==0 | total.2==0 | total.3==0 | total.4==0){
-        warning('LOSE')
-        return("You Lose !")
-        #return(paste("<span style=\"color:red\">You Lose !</span>"))
-        #title(sub=list("You Lose !", col="darkblue", font=2, cex=2.5), line=2)
-        
-      }else{
-        warning('WIN')
-        return("You Win ! Game Over !")  #title(sub=list("You Win ! Game Over !", col="red", font=2, cex=2.5), line=2)
-        
-      }
+    # if: button tile is given, derive from id
+    # else: derive from index
+    if (!is.null(tile)) {
+      # grid-[row]-[col]
+      tile <- strsplit(tile, "-")[[1]]
+      tile <- tile[-1] # remove oxo
+      
+      row <- strtoi(tile[1])
+      col <- strtoi(tile[2])
+    } else {
+      row <- (index - 1) %/% GRID_SIZE + 1
+      col <- index - (GRID_SIZE * (row - 1))
     }
     
-    #if the previous is true (if the game is over) then this will fire through as well
-    #this will also fire through if the board is full, regardless of whether the previous if() has executed
-    #i dont know why these two statements should both be here
-    if(length(which(value!=-3))==9){
-      if(total.1==0 | total.2==0 | total.3==0 | total.4==0 | total.1==3 | total.2==3 | total.3==3 | total.4==3){
-        #if(total.1==0 | total.2==0 | total.3==0 | total.4==0){
-        #  title(sub=list("You Are a Loser !", col="darkblue", font=2, cex=2.5), line=2)
-        #}else{
-        #  title(sub=list("You Win ! Game Over !", col="orange", font=2, cex=2.5), line=2)
-        #}
-      }else{
-        warning('RESTART')
-        return("Draw ! Please try again !")  #title(sub=list("Draw ! Please try again !", col="blue", font=2, cex=2.5), line=2)
-      }
-    }
-    return(NULL)
+    coordinates <- list("row" = row,
+                        "col" = col)
+    
+    return(coordinates)
   }
   
-  
-  
-  v <- reactiveValues(doPlot = FALSE)
-  observeEvent(input$image_click, priority = 7, {
-    validate(need(is.null(game()), label='Game is over'))
+  .tileIndex <- function(tile) {
+    coords <- .tileCoordinates(tile)
     
-    #input$image_click will return coordinates when clicked, not a logical value
-    if(!is.null(input$image_click)){
-      v$doPlot <- TRUE
-    }
-  })
-  
-  #object that contains the coordinates returned from clicking the image
-  coords <- eventReactive(input$image_click, {
-    validate(need(is.null(game()), label='Game is over'))
+    index = GRID_SIZE * (coords$row - 1) + coords$col
     
-    validate(need(!is.null(input$image_click), 'need to click image'))
-    input$image_click
-  })
+    return(index)
+  }
   
-  
-  #### keep track of clicks on A: the plot, B: the submit button, C: the next button ####
-  clicks <- reactiveValues(A=0,B=0,C=0)
-  observeEvent(input$image_click, priority = 6, {
-    validate(need(is.null(game()), label='Game is over'))
-    mouse.at <- coords()
-    output$warning <- renderText('')
-    #we dont return an error for out of bounds clicks
-    if(!(mouse.at[[1]] > 3.5 | mouse.at[[1]] < 0.5 | mouse.at[[2]] > 3.5 | mouse.at[[2]] < 0.5)){
-      if(!is.null(input$image_click) & clicks$A==clicks$B){
-        #we allow the user to switch his tic tac toe selection (before a corresponding answer) here
-        clicks$A <- (clicks$A+1)
-        warning(clicks$A, "A")
-      }
-    }else{
-      if(clicks$A == clicks$B){
-        output$warning <- renderText('Please click a valid square')
-      }
-    }
-  })
-  observeEvent(input$submit, priority = 6, {
-    # (validate) make sure the player selected an answer when he pressed submit
-    num <- as.character(numbers$question[length(numbers$question)])
-    # DIRECTLY BELOW: YOU WILL SEE THIS EXACT SAME WARNING 5 TIMES TOTAL IN THIS SERVER. It refers to the following line directly below, which will be the EXACT SAME `ans <- ` line of code each time
-    # this (directly below) has been hard coded to correspond with the number of questions in the question bank
-    ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
-    else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
-    
-    # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to be changed (unless input associating input attributes are changed instead)
-    validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
-    
-    if(!is.null(input$submit)){clicks$B <- (clicks$B+1)}
-    warning(clicks$B, 'b')
-  })
-  observeEvent(input$nextButton, priority = 6, {
-    if(!is.null(input$nextButton)){clicks$C <- (clicks$C+1)}
-    warning(clicks$C, 'c')
-    output$Feedback <- renderText({''})
-  })
-  
-  #called in the next observer below 
-  ID <- reactive({
-    validate(need(is.null(game()), label='Game is over'))
-    
-    validate(
-      need(!is.null(input$image_click), 'click image') # because this will always come first
+  .btnReset <- function(index) {
+    coords <- .tileCoordinates(index = index)
+    id <- paste0("grid-", coords$row, "-", coords$col)
+    updateButton(
+      session = session,
+      inputId = id,
+      label = "?",
+      disabled = FALSE
     )
-    if(clicks$A>=clicks$B){
-      if(clicks$A>clicks$B){
-        "choice"
-      }else if(clicks$A==clicks$B){
-        #if the first few clicks are not valid squares, we must make sure theres no errors in the next observe handler below
-        if(clicks$A==0){
-          "choice"
-        }else{
-          "answer"
-        }
+  }
+  
+  .score <- function(score, tile, value) {
+    i <- .tileCoordinates(tile)
+    
+    score[i$row, i$col] <- value
+    
+    return(score)
+  }
+  
+  .gameCheck <- function(mat) {
+    rows <- rowSums(mat)
+    cols <- colSums(mat)
+    
+    if (GRID_SIZE > 1) {
+      mainD <- sum(diag(mat))
+      rotated <- apply(t(mat), 2, rev)
+      offD <- sum(diag(rotated))
+      
+      if (GRID_SIZE %in% rows ||
+          GRID_SIZE %in% cols ||
+          mainD == GRID_SIZE || offD == GRID_SIZE) {
+        return("win")
+      } else if (-GRID_SIZE %in% rows ||
+                 -GRID_SIZE %in% cols == 1 ||
+                 mainD == -GRID_SIZE || offD == -GRID_SIZE) {
+        return("lose")
+      } else if (any(mat == 0)) {
+        return("continue")
+      } else {
+        return("draw")
       }
+    } else {
+      ifelse(rows == 1 && rows != 0, return("win"), return("lose"))
     }
-  })
-  # observe({
-  #   updateButton(session, "feedback",disabled = T)
-  # })
-  game <- reactiveVal(NULL)
-  #contains the board as it changes throughout the game
-  #will store markers in XsAndOs list
-  #as this event fires, only one marker will be added to the XsAndOs list each time
-  #the first if statement will store an empty marker, when a box is chosen. Then,
-  #then the second will overwrite it with an X or an O, when a question is answered
-  observeEvent({input$submit
-    input$image_click}, priority = 0,{
-      validate(need(is.null(game()), label='Game is over'))
-      
-      mouse.at <- coords()
-      ID <- ID()
-      
-      #if the user enters an invalid click after he already entered his choice on the board, it will not affect the outcome of an answer submission
-      if(clicks$A > clicks$B | clicks$A == 0){
-        validate(
-          need(!(mouse.at[[1]] > 3.5 | mouse.at[[1]] < 0.5 | mouse.at[[2]] > 3.5 | mouse.at[[2]] < 0.5), label='please enter a valid click')
+  }
+  
+  .boardBtn <- function(tile) {
+    index <- .tileIndex(tile)
+    activeQuestion <<- gameSet[index, "id"]
+    
+    output$question <- renderUI({
+      withMathJax()
+      return(gameSet[index, "question"])
+    })
+    
+    output$answer <- .ansFunc(index, gameSet)
+    
+    if (gameSet[index, "extraOutput"] != "") {
+      output$extraOutput <- renderText({
+        gameSet[index, "extraOutput"]
+      })
+    } else {
+      output$extraOutput <- NULL
+    }
+    
+    #Retrigger MathJax processing
+    output$trigger1 <- renderUI({
+      withMathJax()
+    })
+    output$trigger2 <- renderUI({
+      withMathJax()
+    })
+    
+    #Enable Submit Button
+    updateButton(session = session,
+                 inputId = "submit",
+                 disabled = FALSE)
+  }
+  
+  .ansFunc <- function(index, df) {
+    if (df[index, "format"] == "numeric") {
+      renderUI({
+        numericInput(inputId = "ans",
+                     label = df[index, "label"],
+                     value = 0)
+      })
+    } else if (df[index, "format"] == "two") {
+      renderUI({
+        radioGroupButtons(
+          inputId = "ans",
+          choices = list(df[index, "A"],
+                         df[index, "B"]),
+          selected = character(0),
+          checkIcon = list(
+            yes = icon("check-square"),
+            no = icon("square-o")
+          ),
+          status = "textGame",
+          direction = "horizontal",
+          individual = TRUE
         )
-      }else if(clicks$A == clicks$B & ID == "answer" & XsAndOs[[ifelse(length(XsAndOs)==0,'',length(XsAndOs))]][3] %in% c(0,1) ){
-        #or, if the user enters an invalid click before entering a valid click, it will not crash the app
-        if(length(XsAndOs) == clicks$A){
-          validate(
-            need(!(mouse.at[[1]] > 3.5 | mouse.at[[1]] < 0.5 | mouse.at[[2]] > 3.5 | mouse.at[[2]] < 0.5), label='please enter a valid click')
-          )
-        }
-      }
-      
-      #statement that checks the ID return from either of the input triggering events. choice or answer
-      if(ID=="choice"){
-        mouse.at[[1]] <- round(mouse.at[[1]])
-        mouse.at[[2]] <- round(mouse.at[[2]])
-        x<<-mouse.at[[1]]
-        y<<-mouse.at[[2]]
-        
-        #     should this be length(XsAndOs) ?  6/14/18
-        XsAndOs[[(length(container)+1)]] <<- c(mouse.at[[2]],(mouse.at[[1]]-.3),NULL)
-        leafletProxy("image", session) %>% addMarkers(lng=XsAndOs[[length(XsAndOs)]][1], lat=XsAndOs[[length(XsAndOs)]][2], layerId = "dummy")
-        
-      }else if(ID=="answer"){
-        value <<- values[[length(values)]]
-        if(container[length(container)]==0){
-          value[x, y] <<- 0
-        }else if(container[length(container)]==1){
-          value[x, y] <<- 1
-        }
-        values[[1]] <<- matrix(-3,3,3)
-        values[[(length(values)+1)]] <<- value
-        temp <<- which((values[[length(values)]] - values[[ (length(values)-1) ]])!=0)
-        values[[length(values)]][temp] <<- container[length(container)]
-        #plotting part, this will overwrite what previously passed through the first if statement in this observe handler
-        if(temp<4){
-          XsAndOs[[(length(XsAndOs))]][3] <<- ifelse(matrix(values[[length(values)]],3,3)[[temp]]==0, 0, 1)
-        }else if(temp<7){ 
-          XsAndOs[[(length(XsAndOs))]][3] <<- ifelse(matrix(values[[length(values)]],3,3)[[temp]]==0, 0, 1)
-        }else if(temp<10){
-          XsAndOs[[(length(XsAndOs))]][3] <<- ifelse(matrix(values[[length(values)]],3,3)[[temp]]==0, 0, 1)
-        }else{
-          stop("OH NO")
-        }
-        
-        #the coordinates below are hard coded to work with the X and O images that I created/am currently using (the 2nd and 3rd leafletproxy calls below)
-        #if you use the latest updated pictures that I used, then you should not need change any code
-        leafletProxy("image", session)  %>% removeMarker(layerId = "dummy")
-        warning(XsAndOs[[length(XsAndOs)]][3])
-        if(!(XsAndOs[[length(XsAndOs)]][3] %in% c(0,1))){stop('VERY BAD')}
-        if(XsAndOs[[length(XsAndOs)]][3]==1){
-          leafletProxy("image", session)  %>% addMarkers(y-.0175,x+.61,icon = X.icon)
-          #updateButton(session, "feedback",disabled = T)
-        }else{
-          leafletProxy("image", session)  %>% addMarkers(y+.008,x+.54,icon = O.icon)
-          num <- as.character(numbers$question[length(numbers$question)])
-          output$Feedback <- renderUI({
-            withMathJax(
-              h4(sprintf(bank[num, 10]
-              ))
-            )
-            
-          })
-        }
-        
-        temp <- line()
-        game(temp) #reactiveVal syntax
-        message(temp)
-      }
+      })
+    } else if (df[index, "format"] == "three") {
+      renderUI({
+        radioGroupButtons(
+          inputId = "ans",
+          choices = list(df[index, "A"],
+                         df[index, "B"],
+                         df[index, "C"]),
+          selected = character(0),
+          checkIcon = list(
+            yes = icon("check-square"),
+            no = icon("square-o")
+          ),
+          status = "textGame",
+          direction = "vertical"
+        )
+      })
+    } else if (df[index, "format"] == "four") {
+      renderUI({
+        radioGroupButtons(
+          inputId = "ans",
+          choices = list(df[index, "A"],
+                         df[index, "B"],
+                         df[index, "C"],
+                         df[index, "D"]),
+          selected = character(0),
+          checkIcon = list(
+            yes = icon("check-square"),
+            no = icon("square-o")
+          ),
+          status = "textGame",
+          direction = "vertical"
+        )
+      })
+    } else {
+      renderUI({
+        radioGroupButtons(
+          inputId = "ans",
+          choices = list(df[index, "A"],
+                         df[index, "B"],
+                         df[index, "C"],
+                         df[index, "D"],
+                         df[index, "E"]),
+          selected = character(0),
+          checkIcon = list(
+            yes = icon("check-square"),
+            no = icon("square-o")
+          ),
+          status = "textGame",
+          direction = "vertical"
+        )
+      })
     }
-  )  
+  }
   
-  #### alerts user of status of game (if it is over) ####
-  #return from line() function
-  output$gameMessage <- renderText({
-    validate(need(!is.null(game), label = 'Game is over'))
+  .gameReset <- function() {
+    lapply(1:TILE_COUNT, .btnReset)
+    qSelected <<-
+      sample(seq_len(nrow(questions)), size = TILE_COUNT, replace = FALSE)
+    gameSet <<- questions[qSelected,]
     
-    game <- game()
-    game
-  })
+    output$question <-
+      renderUI({
+        return("Click a button on the game board to get started on your new game.")
+      })
+    output$answer <- renderUI({
+      ""
+    })
+    output$extraOutput <- renderUI({
+      ""
+    })
+    scoreMatrix <<-
+      matrix(
+        data = rep.int(0, times = TILE_COUNT),
+        nrow = GRID_SIZE,
+        ncol = GRID_SIZE
+      )
+    gameProgress <- FALSE
+    activeBtn <- NA
+    
+    updateButton(session = session,
+                 inputId = "submit",
+                 disabled = TRUE)
+  }
   
-  
-  ####render image of tic tac toe board####
-  output$image <- renderLeaflet({
-    new.board
-    #  out = out %>% addMarkers(lng=temp[[1]],lat=temp[[2]], icon=tryCatch(ifelse(temp[[3]]==1, X.icon, O.icon), error=function(e)NULL))
-  })
-  
-  #### go button ####
-  observeEvent(input$go, priority=1, {
-    updateTabItems(session, "tabs", "qqq")
-  })
-  observe({
-    validate(
-      need(is.null(input$image_click), message='')
+  ## BEGIN App Specific xAPI Wrappers ----
+  .generateStatement <- function(session, verb = NA, object = NA, description = NA) {
+    if(is.na(object)){
+      object <- paste0("#shiny-tab-", session$input$pages)
+    }
+    
+    stmt <- boastUtils::generateStatement(
+      session,
+      verb = verb,
+      object = object,
+      description = description
     )
-    output$directions <- renderText({"Begin by selecting the square on the plot you would like"})
-  })
+    
+    response <- boastUtils::storeStatement(session, stmt)
+    
+    return(response)
+  }
   
-  ####start over; new game####
-  observeEvent(input$reset, priority = 5,{
-    if(!is.null(game())){
-      game(NULL)
-    }
-    leafletProxy("image", session) %>% clearMarkers()
+  .generateAnsweredStatement <- function(session, verb = NA, object = NA, description = NA, interactionType = NA, response = NA, success = NA, completion = FALSE) {
     
-    value <<- matrix(rep(-3,9),3,3)
-    values <<- list(value)
-    container <<- c()
-    XsAndOs <<- list()
-    #need to use scoping operator because i didnt create the (above) as reactive objects
-    clicks$A <- 0
-    clicks$B <- 0
-    clicks$C <- 0
-    
-    
-    #if there are less than 9 questions left, then we reset the question bank so that all questions can be drawn from again
-    if(length(which(answers() %in% c("correct","incorrect")))>(Qs-9)){
-      numbers$question <- c()
-    }else{
-      #put the incorrectly answered questions back into play
-      if("incorrect" %in% unique(answers())){
-        if("correct" %in% unique(answers())){
-          #numbers$question <- numbers$question[which((answers()=="correct"))] #we assign the taken questions to be only the correctly answered ones
-          numbers$question <- which(answers()=="correct") #we assign the taken questions to be only the correctly answered ones
-        }else{
-          numbers$question <- c() #since no answers were correct, all questions are in play
-        }
-      }
-      #get rid of most recent question (but if it was answered correctly, it still will not be included)
-      numbers$question <- numbers$question[-length(numbers$question)]
-    }
-    
-    #resample to get new random question for when the game is restarted (when image is clicked)
-    space<-c(1:Qs)
-    numbers$question[(length(numbers$question)+1)] <- sample(space[-tryCatch(if(numbers$question){numbers$question}, error=function(e) (Qs+1))], 1)
-    
-    updateButton(session, 'nextButton', style = "color: white;", disabled = TRUE)
-    output$directions <- renderText({"Begin by selecting the square on the plot you would like"})
-  })
-  #temporary place holders, will be used as a logical pass to the conditional panel containing the renderUI output
-  observeEvent(input$image_click, {
-    validate(need(is.null(game()), label='Game is over'))
-    
-    output$temp <- renderText({'1'})
-  })
-  observeEvent(input$reset, priority = 8, {
-    output$Feedback <- renderText({''})
-    output$temp <- renderText({'2'})
-  })
-  
-  
-  #### enact game over mode ####
-  observeEvent(input$submit, priority = -1, {
-    validate(need(!is.null(game()), label='Game is over'))
-    
-    # (validate) makes sure the player selected an answer when he pressed submit
-    num <- as.character(numbers$question[length(numbers$question)])
-    # this (directly below) has been hard coded to correspond with the number of questions in the question bank
-    ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
-    else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
-    
-    # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
-    validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
-    
-    updateButton(session, 'nextButton', style = "color: white;", disabled = TRUE)
-    updateButton(session, 'submit', style = "color: white;", disabled = TRUE)
-    output$directions <- renderText({"If you would like to play again, press 'Start new game'!"})
-  })
-  
-  
-  ######## QUESTIONS #########
-  
-  
-  
-  
-  #### random question ####
-  numbers <- reactiveValues(question = c())
-  observeEvent(input$image_click, once=TRUE, priority = 9, {
-    validate(need(is.null(game()), label='Game is over'))
-    
-    numbers$question[1] <- sample(1:Qs, 1)
-    updateButton(session, 'nextButton', style = "color: white;", disabled = TRUE)
-    output$directions <- renderText({"Now answer the question and press submit"})
-  })
-  observeEvent(input$nextButton, priority = 4, {
-    space <- c(1:Qs)
-    numbers$question[(length(numbers$question)+1)] <- sample(space[-tryCatch(numbers$question, error=function(e) (Qs+1))], 1)
-    updateButton(session, 'nextButton', style = "color: white;", disabled = TRUE)
-    output$directions <- renderText({"Now select another square on the board"})
-    if(clicks$A == (clicks$C + 1)){
-      updateButton(session, 'submit', style = "color: white;", disabled = FALSE)
-      output$directions <- renderText({"Now answer the question and press submit"})
-    }
-    #updateCheckboxInput(session, "feedback",label = "Show Solution", value = FALSE)
-  })
-  
-  output$Question <- renderUI({
-    num <- as.character(numbers$question[length(numbers$question)])
-    
-    if(num == 26){
-      withMathJax(
-        h4(sprintf(
-          bank[num, 2]
-        ))
+    stmt <- boastUtils::generateStatement(
+      session,
+      verb = verb,
+      object = object,
+      description = paste0("Question ", activeQuestion, ": ", description),
+      interactionType = interactionType,
+      success = success,
+      response = response,
+      completion = completion,
+      extensions = list(
+        ref = "https://educationshinyappteam.github.io/BOAST/xapi/result/extensions/scoreMatrix",
+        value = paste(as.data.frame(scoreMatrix), collapse = ", ")
       )
-    }
-    else if(num == 29){
-      withMathJax(
-        h4(sprintf(
-          bank[num, 2]
-        ))
-      )
-    }
+    )
     
-    else{print(bank[num,2])}
-  })
-  ####output random question####
-  output$CurrentQuestion <- renderUI({
-    num <- as.character(numbers$question[length(numbers$question)])
-    if(num == 23){
-      withMathJax(
-        h4(sprintf(
-          bank[num, 4]
-        ))
-      )
-    }
-    else if(num == 37){
-      withMathJax(
-        h4(sprintf(
-          bank[num, 4:6]
-        ))
-      )
-    }
-    temp <- NULL
+    response <- boastUtils::storeStatement(session, stmt)
     
+    return(response)
+  }
+  ## END App Specific xAPI Wrappers ----
+  
+  # Define navigation buttons
+  observeEvent(input$go1, {
+    updateTabItems(session, "pages", "game")
+  })
+  
+  # Read in data and generate the first subset
+  questions <-
+    read.csv("questions.csv",
+             stringsAsFactors = FALSE,
+             as.is = TRUE)
+  qSelected <-
+    sample(seq_len(nrow(questions)), size = TILE_COUNT, replace = FALSE)
+  gameSet <- questions[qSelected,]
+  
+  # Program the Reset Button
+  observeEvent(input$reset, {
+    .generateStatement(session, object = "reset", verb = "interacted", description = "Game board has been reset.")
+    .gameReset()
+  })
+  
+  # Render Game Board / Attach Observers
+  output$gameBoard <- renderUI({
+    board <- list()
+    index <- 1
     
-    #coded for multiple choices
-    if(!(FALSE %in% unique(as.vector(bank[num,6:8]=='')))){
-      # ^ if the question has 2 multiple choice responses
-      radioButtons(inputId = (num), label='', choiceNames=c(bank[num, 4], bank[num, 5]), choiceValues = c("A", "B"),  selected = character(0))
-    }else if(!(FALSE %in% unique(as.vector(bank[num,7:8]=='')))){
-      # ^ if the question has 3 multiple choice responses
-      radioButtons(inputId = (num), label='', choiceNames=c(bank[num, 4], bank[num, 5], bank[num, 6]), choiceValues = c("A", "B", "C"), selected = character(0))
-    }else if(bank[num,8]==''){
-      # ^ if the question has 4 multiple choice responses
-      radioButtons(inputId = (num), label='', choiceNames=c(bank[num, 4], bank[num, 5], bank[num, 6],bank[num, 7]), choiceValues = c("A", "B", "C","D"), selected = character(0))
-    }else{
-      # ^ if the question has 5 multiple choice responses
-      radioButtons(inputId = (num), label='', choiceNames=c(bank[num, 4], bank[num, 5], bank[num, 6], bank[num, 7], bank[num, 8]), choiceValues = c("A", "B", "C", "D","E"), selected = character(0))
-    }
+    sapply(1:GRID_SIZE, function(row) {
+      sapply(1:GRID_SIZE, function(column) {
+        id <- paste0("grid-", row, "-", column)
+        
+        board[[index]] <<- tags$li(
+          actionButton(
+            inputId = paste0("grid-", row, "-", column),
+            label = "?",
+            color = "primary",
+            style = "bordered",
+            class = "grid-fill"
+          ),
+          class = "grid-tile"
+        )
+        
+        observeEvent(session$input[[id]], {
+          activeBtn <<- id
+          .boardBtn(id)
+          .generateStatement(session, object = activeBtn, verb = "interacted", description = paste0("Tile ", activeBtn, " selected. Rendering question: ", activeQuestion, "."))
+        })
+        
+        index <<- index + 1
+      })
+    })
+    
+    tags$ol(board, class = paste(
+      "grid-board",
+      "grid-fill",
+      paste0("grid-", GRID_SIZE, "x", GRID_SIZE)
+    ))
   })
   
-  #hard coded observer for specific questions in the csv,
-  #these questions were special in that they had pictures to go along with them, or they utilized latex to write mathematical functions
-  output$CurrentQuestion.extra <- renderUI({
-    num <- as.character(numbers$question[length(numbers$question)])
-    setwd("./")
-    if(num == 5){
-      img(src="5.PNG",height = 150,width = 500,align = "middle")
-    }else if(num == 14){
-      img(src="14.PNG",height = 150,width = 400,align = "middle")
-    }else if(num == 20){
-      img(src="20.PNG",height = 150,width = 400,align = "middle")
-    }else if(num == 21){
-      img(src="21.PNG",height = 150,width = 400,align = "middle")
-    }else if(num == 26){
-      img(src="27.PNG",height = 150,width = 400,align = "middle")
-    }else if(num == 27){
-      img(src="28.PNG",height = 150,width = 400,align = "middle")
-    }else if(num == 30){
-      img(src="31.PNG",height = 150,width = 400,align = "middle")
-    }else if(num == 35){
-      img(src="36.PNG",height = 150,width = 400,align = "middle")
-    }else if(num == 36){
-      img(src="37.PNG",height = 150,width = 400,align = "middle")
-    }else if(num == 37){
-      img(src="38.PNG",height = 150,width = 400,align = "middle")
-    }
-  })
-  
-  
-  ####logical flow of answering questions; some extra code to deal with button disabling sequence####
-  #these observers are for before the game is begun
-  observeEvent(input$go3, {
-    updateButton(session, "submit", disabled = TRUE)
-  })
-  observeEvent(input$go3, {
-    updateButton(session, "nextButton", disabled = TRUE)
-  })
-  
-  #these apply to if the game has already been started 
+  # Program Submit Button
   observeEvent(input$submit, {
-    # (validate) makes sure the player selected an answer when he pressed submit
-    num <- as.character(numbers$question[length(numbers$question)])
-    # this (directly below) has been hard coded to correspond with the number of questions in the question bank
-    ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
-    else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+    index <- .tileIndex(activeBtn)
+    answer <- ""
     
-    # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
-    validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
+    if (gameSet[index, "format"] == "numeric") {
+      answer <- gameSet[index, "answer"]
+    } else {
+      answer <- gameSet[index, gameSet[index, "answer"]]
+    }
     
-    updateButton(session, 'submit', style = "color: white;", disabled = TRUE)
-    updateButton(session, 'nextButton', style = "color: white;", disabled = FALSE)
-    output$directions <- renderText({"Now press the next button"})
-  })
-  observeEvent(input$image_click, {
-    validate(need(is.null(game()), label='Game is over'))
+    success <- input$ans == answer
     
-    if(!(clicks$A > (clicks$C + 1))){
-      updateButton(session, 'submit', style = "color: white;", disabled = FALSE)
-      output$directions <- renderText({"Now answer the question and press submit"})
+    if (is.null(success) || length(success) == 0) {
+      sendSweetAlert(
+        session = session,
+        title = "Error",
+        text = "Please select an answer before pressing Submit.",
+        type = "error"
+      )
+    } else if (success) {
+      updateButton(
+        session = session,
+        inputId = activeBtn,
+        label = player,
+        disabled = TRUE
+      )
+      scoreMatrix <<- .score(scoreMatrix, activeBtn, 1)
+    } else {
+      updateButton(
+        session = session,
+        inputId = activeBtn,
+        label = opponent,
+        disabled = TRUE
+      )
+      scoreMatrix <<- .score(scoreMatrix, activeBtn,-1)
+    }
+    
+    # Check for game over states
+    .gameState <- .gameCheck(scoreMatrix)
+    completion <- ifelse(.gameState == "continue", FALSE, TRUE)
+    interactionType <- ifelse(gameSet[index,]$format == "numeric", "numeric", "choice")
+    
+    .generateAnsweredStatement(
+      session,
+      object = activeBtn,
+      verb = "answered",
+      description = gameSet[index,]$question,
+      response = input$ans,
+      interactionType = interactionType,
+      success = success,
+      completion = completion
+    )
+    
+    if (.gameState == "win") {
+      .generateStatement(session, object = "game", verb = "completed", description = "Player has won the game.")
+      confirmSweetAlert(
+        session = session,
+        inputId = "endGame",
+        title = "You Win!",
+        text = "You've filled either a row, a column, or a main diagonal. Start over and play a new game.",
+        btn_labels = "Start Over"
+      )
+    } else if (.gameState == "lose") {
+      .generateStatement(session, object = "game", verb = "completed", description = "Player has lost the game.")
+      confirmSweetAlert(
+        session = session,
+        inputId = "endGame",
+        title = "You lose :(",
+        text = "Take a moment to review the concepts and then try again.",
+        btn_labels = "Start Over"
+      )
+    } else if (.gameState == "draw") {
+      .generateStatement(session, object = "game", verb = "completed", description = "Game has ended in a draw.")
+      confirmSweetAlert(
+        session = session,
+        inputId = "endGame",
+        title = "Draw!",
+        text = "Take a moment to review the concepts and then try again.",
+        btn_labels = "Start Over"
+      )
+    }
+    if (is.null(success) || length(success) == 0) {
+      updateButton(
+        session = session,
+        inputId = "submit",
+        disabled = FALSE
+      )
+    } else{
+      updateButton(
+        session = session,
+        inputId = "submit",
+        disabled = TRUE
+      )
     }
   })
   
-  ####checks answer####
-  answers <- reactiveVal(c(rep('', Qs)))
-  observeEvent(input$submit, {
-    #(validate) makes sure the player selected an answer when he pressed submit
-    num <- as.character(numbers$question[length(numbers$question)])
-    # this (directly below) has been hard coded to correspond with the number of questions in the question bank
-    ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
-    else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
-    
-    # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
-    validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
-    
-    temp <- answers()
-    num <- as.character(numbers$question[length(numbers$question)])
-    # this (directly below) has been hard coded to correspond with the number of questions in the question bank
-    ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
-    else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
-    
-    if(ans == bank[num, 3]){
-      temp2 <- "correct"
-    }else{
-      temp2 <- "incorrect"
-    }
-    temp[num] <- temp2
-    answers(temp)
-    container[(length(container)+1)] <<- ifelse(temp[num] == "correct", 1, 0)
-    
+  observeEvent(eventExpr = input$pages, 
+               handlerExpr = {
+                 if (input$pages == "game") {
+                   if (!gameProgress) {
+                     shinyalert(
+                       title = "Player Select",
+                       text = "Select whether you want to play as O or X.",
+                       showConfirmButton = TRUE,
+                       confirmButtonText = "Play as X",
+                       showCancelButton = TRUE,
+                       cancelButtonText = "Play as O"
+                     )
+                     gameProgress <<- TRUE
+                   }
+                 }
+                 .generateStatement(session, 
+                                    verb = "experienced", 
+                                    description = paste0("Navigated to ", 
+                                                         input$pages, 
+                                                         " tab.")
+                 )
+               }, 
+               ignoreInit = TRUE)
+  
+  observeEvent(input$endGame, {
+    .generateStatement(session, object = "endGame", verb = "interacted", description = paste("Game has been reset."))
+    .gameReset()
   })
+  
+  observeEvent(eventExpr = input$shinyalert, 
+               handlerExpr = {
+                 if (input$shinyalert == TRUE) {
+                   player <<- "X"
+                   opponent <<- "O"
+                 }
+                 if (input$shinyalert == FALSE) {
+                   player <<- "O"
+                   opponent <<- "X"
+                 }
+                 .generateStatement(session, 
+                                    object = "shinyalert", 
+                                    verb = "interacted", 
+                                    description = paste0("User has selected player: ", 
+                                                         player)
+                 )
+                 
+                 output$player <- renderUI({
+                   return(paste0("You are playing as ", 
+                                 player, 
+                                 "."))
+                 })
+               })
 }
 
 
+#   #### question bank ####
+#   bank <- read.csv('questions.csv', stringsAsFactors = FALSE)
+#   bank <- bank[,c(1:3,5:10,12)]
+#   Qs <- nrow(bank)
+#   
+#   
+#   ######## MY SERVER CODE ##########
+#   
+#   #setwd("~/PSU (courses,etc) & Act-Sci (exams, etc)/shiny research/BOAST-EstimationTesting shiny")
+#   #the coordinates (sizing attributes) below are hard coded to work with the X and O images that I created/am currently using
+#   X.icon <- makeIcon(iconUrl = 'X.PNG', iconWidth = 95) #, iconHeight = 95)
+#   O.icon <- makeIcon(iconUrl = 'O.PNG', iconWidth = 105) #, iconHeight = 105)
+#   value <- matrix(rep(-3,9),3,3)
+#   values <- list(value) # 
+#   container <- c() # contains right or wrong answers after submit button is pressed 
+#   XsAndOs <- list()
+#   resolved <- c(rep(FALSE, Qs))
+#   #lists <- reactiveValues(container <- c(),values <- list(),value <- NULL)
+#   sr1.1=Polygon(cbind(c(0.5,0.5,3.5,3.5), c(2.5,1.5,1.5,2.5))) # inner, middle horizontal lines
+#   sr1.2=Polygon(cbind(c(0.5,0.5,3.5,3.5), c(2.5,3.5,3.5,2.5))) # inner, horizontal lines
+#   sr1.3=Polygon(cbind(c(0.5,0.5,3.5,3.5), c(0.5,1.5,1.5,0.5))) # inner, horizontal lines
+#   sr2=Polygon(cbind(c(1.5,1.5,2.5,2.5), c(3.5,0.5,0.5,3.5)))
+#   sr3=Polygon(cbind(c(0.5,0.5,0.5,3.5), c(0.52,3.47,0.5,0.5))) #outer 
+#   sr4=Polygon(cbind(c(3.5,3.5,0.5,3.5), c(0.52,3.47,3.5,3.5))) #square
+#   srs1.1=Polygons(list(sr1.1), 's1.1')
+#   srs1.2=Polygons(list(sr1.2), 's1.2')
+#   srs1.3=Polygons(list(sr1.3), 's1.3')
+#   srs2=Polygons(list(sr2), 's2')
+#   srs3=Polygons(list(sr3), 's3')
+#   srs4=Polygons(list(sr4), 's4')
+#   #srs1.2,srs1.3
+#   spp = SpatialPolygons(list(srs1.1,srs2,srs3,srs4), 1:4)
+#   #spp = SpatialPolygons(list(srs3,srs4), 1:2)
+#   
+#   r <- raster(xmn = 0.5, xmx = 3.5, ymn = 0.5, ymx = 3.5, nrows = 3, ncols = 3)
+#   values(r) <- matrix(1:9, nrow(r), ncol(r), byrow = TRUE)
+#   crs(r) <- CRS("+init=epsg:4326")
+#   new.board <- leaflet(options = leafletOptions(zoomControl = FALSE, doubleClickZoom = FALSE, minZoom = 7, maxZoom = 7, dragging = FALSE)) %>%  addPolygons(data=spp) %>% addRasterImage(r, colors="Set3")
+#   # %>% addTiles()
+#   line <- function(){
+#     #recall, in the value matrix, zero's represent O's, or wrong answers
+#     for(i in 1:3){
+#       total.1 <- 0 ; total.2 <- 0
+#       for(j in 1:3){
+#         total.1 <- total.1 + value[i, j]
+#         total.2 <- total.2 + value[j, i]
+#       }
+#       if(total.1==0 | total.2==0 | total.1==3 | total.2==3){
+#         break
+#       }
+#     }
+#     total.3 <- value[1, 1] + value[2, 2] + value[3, 3]
+#     total.4 <- value[1, 3] + value[2, 2] + value[3, 1]
+#     
+#     #if the game has been won:
+#     if(total.1==0 | total.2==0 | total.3==0 | total.4==0 | total.1==3 | total.2==3 | total.3==3 | total.4==3){
+#       #place.na[!is.na(place.na)] <<- NA
+#       if(total.1==0 | total.2==0 | total.3==0 | total.4==0){
+#         warning('LOSE')
+#         return("You Lose !")
+#         #return(paste("<span style=\"color:red\">You Lose !</span>"))
+#         #title(sub=list("You Lose !", col="darkblue", font=2, cex=2.5), line=2)
+#         
+#       }else{
+#         warning('WIN')
+#         return("You Win ! Game Over !")  #title(sub=list("You Win ! Game Over !", col="red", font=2, cex=2.5), line=2)
+#         
+#       }
+#     }
+#     
+#     #if the previous is true (if the game is over) then this will fire through as well
+#     #this will also fire through if the board is full, regardless of whether the previous if() has executed
+#     #i dont know why these two statements should both be here
+#     if(length(which(value!=-3))==9){
+#       if(total.1==0 | total.2==0 | total.3==0 | total.4==0 | total.1==3 | total.2==3 | total.3==3 | total.4==3){
+#         #if(total.1==0 | total.2==0 | total.3==0 | total.4==0){
+#         #  title(sub=list("You Are a Loser !", col="darkblue", font=2, cex=2.5), line=2)
+#         #}else{
+#         #  title(sub=list("You Win ! Game Over !", col="orange", font=2, cex=2.5), line=2)
+#         #}
+#       }else{
+#         warning('RESTART')
+#         return("Draw ! Please try again !")  #title(sub=list("Draw ! Please try again !", col="blue", font=2, cex=2.5), line=2)
+#       }
+#     }
+#     return(NULL)
+#   }
+#   
+#   
+#   
+#   v <- reactiveValues(doPlot = FALSE)
+#   observeEvent(input$image_click, priority = 7, {
+#     validate(need(is.null(game()), label='Game is over'))
+#     
+#     #input$image_click will return coordinates when clicked, not a logical value
+#     if(!is.null(input$image_click)){
+#       v$doPlot <- TRUE
+#     }
+#   })
+#   
+#   #object that contains the coordinates returned from clicking the image
+#   coords <- eventReactive(input$image_click, {
+#     validate(need(is.null(game()), label='Game is over'))
+#     
+#     validate(need(!is.null(input$image_click), 'need to click image'))
+#     input$image_click
+#   })
+#   
+#   
+#   #### keep track of clicks on A: the plot, B: the submit button, C: the next button ####
+#   clicks <- reactiveValues(A=0,B=0,C=0)
+#   observeEvent(input$image_click, priority = 6, {
+#     validate(need(is.null(game()), label='Game is over'))
+#     mouse.at <- coords()
+#     output$warning <- renderText('')
+#     #we dont return an error for out of bounds clicks
+#     if(!(mouse.at[[1]] > 3.5 | mouse.at[[1]] < 0.5 | mouse.at[[2]] > 3.5 | mouse.at[[2]] < 0.5)){
+#       if(!is.null(input$image_click) & clicks$A==clicks$B){
+#         #we allow the user to switch his tic tac toe selection (before a corresponding answer) here
+#         clicks$A <- (clicks$A+1)
+#         warning(clicks$A, "A")
+#       }
+#     }else{
+#       if(clicks$A == clicks$B){
+#         output$warning <- renderText('Please click a valid square')
+#       }
+#     }
+#   })
+#   observeEvent(input$submit, priority = 6, {
+#     # (validate) make sure the player selected an answer when he pressed submit
+#     num <- as.character(numbers$question[length(numbers$question)])
+#     # DIRECTLY BELOW: YOU WILL SEE THIS EXACT SAME WARNING 5 TIMES TOTAL IN THIS SERVER. It refers to the following line directly below, which will be the EXACT SAME `ans <- ` line of code each time
+#     # this (directly below) has been hard coded to correspond with the number of questions in the question bank
+#     ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
+#     else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+#     
+#     # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to be changed (unless input associating input attributes are changed instead)
+#     validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
+#     
+#     if(!is.null(input$submit)){clicks$B <- (clicks$B+1)}
+#     warning(clicks$B, 'b')
+#   })
+#   observeEvent(input$nextButton, priority = 6, {
+#     if(!is.null(input$nextButton)){clicks$C <- (clicks$C+1)}
+#     warning(clicks$C, 'c')
+#     output$Feedback <- renderText({''})
+#   })
+#   
+#   #called in the next observer below 
+#   ID <- reactive({
+#     validate(need(is.null(game()), label='Game is over'))
+#     
+#     validate(
+#       need(!is.null(input$image_click), 'click image') # because this will always come first
+#     )
+#     if(clicks$A>=clicks$B){
+#       if(clicks$A>clicks$B){
+#         "choice"
+#       }else if(clicks$A==clicks$B){
+#         #if the first few clicks are not valid squares, we must make sure theres no errors in the next observe handler below
+#         if(clicks$A==0){
+#           "choice"
+#         }else{
+#           "answer"
+#         }
+#       }
+#     }
+#   })
+#   # observe({
+#   #   updateButton(session, "feedback",disabled = T)
+#   # })
+#   game <- reactiveVal(NULL)
+#   #contains the board as it changes throughout the game
+#   #will store markers in XsAndOs list
+#   #as this event fires, only one marker will be added to the XsAndOs list each time
+#   #the first if statement will store an empty marker, when a box is chosen. Then,
+#   #then the second will overwrite it with an X or an O, when a question is answered
+#   observeEvent({input$submit
+#     input$image_click}, priority = 0,{
+#       validate(need(is.null(game()), label='Game is over'))
+#       
+#       mouse.at <- coords()
+#       ID <- ID()
+#       
+#       #if the user enters an invalid click after he already entered his choice on the board, it will not affect the outcome of an answer submission
+#       if(clicks$A > clicks$B | clicks$A == 0){
+#         validate(
+#           need(!(mouse.at[[1]] > 3.5 | mouse.at[[1]] < 0.5 | mouse.at[[2]] > 3.5 | mouse.at[[2]] < 0.5), label='please enter a valid click')
+#         )
+#       }else if(clicks$A == clicks$B & ID == "answer" & XsAndOs[[ifelse(length(XsAndOs)==0,'',length(XsAndOs))]][3] %in% c(0,1) ){
+#         #or, if the user enters an invalid click before entering a valid click, it will not crash the app
+#         if(length(XsAndOs) == clicks$A){
+#           validate(
+#             need(!(mouse.at[[1]] > 3.5 | mouse.at[[1]] < 0.5 | mouse.at[[2]] > 3.5 | mouse.at[[2]] < 0.5), label='please enter a valid click')
+#           )
+#         }
+#       }
+#       
+#       #statement that checks the ID return from either of the input triggering events. choice or answer
+#       if(ID=="choice"){
+#         mouse.at[[1]] <- round(mouse.at[[1]])
+#         mouse.at[[2]] <- round(mouse.at[[2]])
+#         x<<-mouse.at[[1]]
+#         y<<-mouse.at[[2]]
+#         
+#         #     should this be length(XsAndOs) ?  6/14/18
+#         XsAndOs[[(length(container)+1)]] <<- c(mouse.at[[2]],(mouse.at[[1]]-.3),NULL)
+#         leafletProxy("image", session) %>% addMarkers(lng=XsAndOs[[length(XsAndOs)]][1], lat=XsAndOs[[length(XsAndOs)]][2], layerId = "dummy")
+#         
+#       }else if(ID=="answer"){
+#         value <<- values[[length(values)]]
+#         if(container[length(container)]==0){
+#           value[x, y] <<- 0
+#         }else if(container[length(container)]==1){
+#           value[x, y] <<- 1
+#         }
+#         values[[1]] <<- matrix(-3,3,3)
+#         values[[(length(values)+1)]] <<- value
+#         temp <<- which((values[[length(values)]] - values[[ (length(values)-1) ]])!=0)
+#         values[[length(values)]][temp] <<- container[length(container)]
+#         #plotting part, this will overwrite what previously passed through the first if statement in this observe handler
+#         if(temp<4){
+#           XsAndOs[[(length(XsAndOs))]][3] <<- ifelse(matrix(values[[length(values)]],3,3)[[temp]]==0, 0, 1)
+#         }else if(temp<7){ 
+#           XsAndOs[[(length(XsAndOs))]][3] <<- ifelse(matrix(values[[length(values)]],3,3)[[temp]]==0, 0, 1)
+#         }else if(temp<10){
+#           XsAndOs[[(length(XsAndOs))]][3] <<- ifelse(matrix(values[[length(values)]],3,3)[[temp]]==0, 0, 1)
+#         }else{
+#           stop("OH NO")
+#         }
+#         
+#         #the coordinates below are hard coded to work with the X and O images that I created/am currently using (the 2nd and 3rd leafletproxy calls below)
+#         #if you use the latest updated pictures that I used, then you should not need change any code
+#         leafletProxy("image", session)  %>% removeMarker(layerId = "dummy")
+#         warning(XsAndOs[[length(XsAndOs)]][3])
+#         if(!(XsAndOs[[length(XsAndOs)]][3] %in% c(0,1))){stop('VERY BAD')}
+#         if(XsAndOs[[length(XsAndOs)]][3]==1){
+#           leafletProxy("image", session)  %>% addMarkers(y-.0175,x+.61,icon = X.icon)
+#           #updateButton(session, "feedback",disabled = T)
+#         }else{
+#           leafletProxy("image", session)  %>% addMarkers(y+.008,x+.54,icon = O.icon)
+#           num <- as.character(numbers$question[length(numbers$question)])
+#           output$Feedback <- renderUI({
+#             withMathJax(
+#               h4(sprintf(bank[num, 10]
+#               ))
+#             )
+#             
+#           })
+#         }
+#         
+#         temp <- line()
+#         game(temp) #reactiveVal syntax
+#         message(temp)
+#       }
+#     }
+#   )  
+#   
+#   #### alerts user of status of game (if it is over) ####
+#   #return from line() function
+#   output$gameMessage <- renderText({
+#     validate(need(!is.null(game), label = 'Game is over'))
+#     
+#     game <- game()
+#     game
+#   })
+#   
+#   
+#   ####render image of tic tac toe board####
+#   output$image <- renderLeaflet({
+#     new.board
+#     #  out = out %>% addMarkers(lng=temp[[1]],lat=temp[[2]], icon=tryCatch(ifelse(temp[[3]]==1, X.icon, O.icon), error=function(e)NULL))
+#   })
+#   
+#   #### go button ####
+#   observeEvent(input$go, priority=1, {
+#     updateTabItems(session, "tabs", "qqq")
+#   })
+#   observe({
+#     validate(
+#       need(is.null(input$image_click), message='')
+#     )
+#     output$directions <- renderText({"Begin by selecting the square on the plot you would like"})
+#   })
+#   
+#   ####start over; new game####
+#   observeEvent(input$reset, priority = 5,{
+#     if(!is.null(game())){
+#       game(NULL)
+#     }
+#     leafletProxy("image", session) %>% clearMarkers()
+#     
+#     value <<- matrix(rep(-3,9),3,3)
+#     values <<- list(value)
+#     container <<- c()
+#     XsAndOs <<- list()
+#     #need to use scoping operator because i didnt create the (above) as reactive objects
+#     clicks$A <- 0
+#     clicks$B <- 0
+#     clicks$C <- 0
+#     
+#     
+#     #if there are less than 9 questions left, then we reset the question bank so that all questions can be drawn from again
+#     if(length(which(answers() %in% c("correct","incorrect")))>(Qs-9)){
+#       numbers$question <- c()
+#     }else{
+#       #put the incorrectly answered questions back into play
+#       if("incorrect" %in% unique(answers())){
+#         if("correct" %in% unique(answers())){
+#           #numbers$question <- numbers$question[which((answers()=="correct"))] #we assign the taken questions to be only the correctly answered ones
+#           numbers$question <- which(answers()=="correct") #we assign the taken questions to be only the correctly answered ones
+#         }else{
+#           numbers$question <- c() #since no answers were correct, all questions are in play
+#         }
+#       }
+#       #get rid of most recent question (but if it was answered correctly, it still will not be included)
+#       numbers$question <- numbers$question[-length(numbers$question)]
+#     }
+#     
+#     #resample to get new random question for when the game is restarted (when image is clicked)
+#     space<-c(1:Qs)
+#     numbers$question[(length(numbers$question)+1)] <- sample(space[-tryCatch(if(numbers$question){numbers$question}, error=function(e) (Qs+1))], 1)
+#     
+#     updateButton(session, 'nextButton', style = "color: white;", disabled = TRUE)
+#     output$directions <- renderText({"Begin by selecting the square on the plot you would like"})
+#   })
+#   #temporary place holders, will be used as a logical pass to the conditional panel containing the renderUI output
+#   observeEvent(input$image_click, {
+#     validate(need(is.null(game()), label='Game is over'))
+#     
+#     output$temp <- renderText({'1'})
+#   })
+#   observeEvent(input$reset, priority = 8, {
+#     output$Feedback <- renderText({''})
+#     output$temp <- renderText({'2'})
+#   })
+#   
+#   
+#   #### enact game over mode ####
+#   observeEvent(input$submit, priority = -1, {
+#     validate(need(!is.null(game()), label='Game is over'))
+#     
+#     # (validate) makes sure the player selected an answer when he pressed submit
+#     num <- as.character(numbers$question[length(numbers$question)])
+#     # this (directly below) has been hard coded to correspond with the number of questions in the question bank
+#     ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
+#     else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+#     
+#     # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
+#     validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
+#     
+#     updateButton(session, 'nextButton', style = "color: white;", disabled = TRUE)
+#     updateButton(session, 'submit', style = "color: white;", disabled = TRUE)
+#     output$directions <- renderText({"If you would like to play again, press 'Start new game'!"})
+#   })
+#   
+#   
+#   ######## QUESTIONS #########
+#   
+#   
+#   
+#   
+#   #### random question ####
+#   numbers <- reactiveValues(question = c())
+#   observeEvent(input$image_click, once=TRUE, priority = 9, {
+#     validate(need(is.null(game()), label='Game is over'))
+#     
+#     numbers$question[1] <- sample(1:Qs, 1)
+#     updateButton(session, 'nextButton', style = "color: white;", disabled = TRUE)
+#     output$directions <- renderText({"Now answer the question and press submit"})
+#   })
+#   observeEvent(input$nextButton, priority = 4, {
+#     space <- c(1:Qs)
+#     numbers$question[(length(numbers$question)+1)] <- sample(space[-tryCatch(numbers$question, error=function(e) (Qs+1))], 1)
+#     updateButton(session, 'nextButton', style = "color: white;", disabled = TRUE)
+#     output$directions <- renderText({"Now select another square on the board"})
+#     if(clicks$A == (clicks$C + 1)){
+#       updateButton(session, 'submit', style = "color: white;", disabled = FALSE)
+#       output$directions <- renderText({"Now answer the question and press submit"})
+#     }
+#     #updateCheckboxInput(session, "feedback",label = "Show Solution", value = FALSE)
+#   })
+#   
+#   output$Question <- renderUI({
+#     num <- as.character(numbers$question[length(numbers$question)])
+#     
+#     if(num == 26){
+#       withMathJax(
+#         h4(sprintf(
+#           bank[num, 2]
+#         ))
+#       )
+#     }
+#     else if(num == 29){
+#       withMathJax(
+#         h4(sprintf(
+#           bank[num, 2]
+#         ))
+#       )
+#     }
+#     
+#     else{print(bank[num,2])}
+#   })
+#   ####output random question####
+#   output$CurrentQuestion <- renderUI({
+#     num <- as.character(numbers$question[length(numbers$question)])
+#     if(num == 23){
+#       withMathJax(
+#         h4(sprintf(
+#           bank[num, 4]
+#         ))
+#       )
+#     }
+#     else if(num == 37){
+#       withMathJax(
+#         h4(sprintf(
+#           bank[num, 4:6]
+#         ))
+#       )
+#     }
+#     temp <- NULL
+#     
+#     
+#     #coded for multiple choices
+#     if(!(FALSE %in% unique(as.vector(bank[num,6:8]=='')))){
+#       # ^ if the question has 2 multiple choice responses
+#       radioButtons(inputId = (num), label='', choiceNames=c(bank[num, 4], bank[num, 5]), choiceValues = c("A", "B"),  selected = character(0))
+#     }else if(!(FALSE %in% unique(as.vector(bank[num,7:8]=='')))){
+#       # ^ if the question has 3 multiple choice responses
+#       radioButtons(inputId = (num), label='', choiceNames=c(bank[num, 4], bank[num, 5], bank[num, 6]), choiceValues = c("A", "B", "C"), selected = character(0))
+#     }else if(bank[num,8]==''){
+#       # ^ if the question has 4 multiple choice responses
+#       radioButtons(inputId = (num), label='', choiceNames=c(bank[num, 4], bank[num, 5], bank[num, 6],bank[num, 7]), choiceValues = c("A", "B", "C","D"), selected = character(0))
+#     }else{
+#       # ^ if the question has 5 multiple choice responses
+#       radioButtons(inputId = (num), label='', choiceNames=c(bank[num, 4], bank[num, 5], bank[num, 6], bank[num, 7], bank[num, 8]), choiceValues = c("A", "B", "C", "D","E"), selected = character(0))
+#     }
+#   })
+#   
+#   #hard coded observer for specific questions in the csv,
+#   #these questions were special in that they had pictures to go along with them, or they utilized latex to write mathematical functions
+#   output$CurrentQuestion.extra <- renderUI({
+#     num <- as.character(numbers$question[length(numbers$question)])
+#     setwd("./")
+#     if(num == 5){
+#       img(src="5.PNG",height = 150,width = 500,align = "middle")
+#     }else if(num == 14){
+#       img(src="14.PNG",height = 150,width = 400,align = "middle")
+#     }else if(num == 20){
+#       img(src="20.PNG",height = 150,width = 400,align = "middle")
+#     }else if(num == 21){
+#       img(src="21.PNG",height = 150,width = 400,align = "middle")
+#     }else if(num == 26){
+#       img(src="27.PNG",height = 150,width = 400,align = "middle")
+#     }else if(num == 27){
+#       img(src="28.PNG",height = 150,width = 400,align = "middle")
+#     }else if(num == 30){
+#       img(src="31.PNG",height = 150,width = 400,align = "middle")
+#     }else if(num == 35){
+#       img(src="36.PNG",height = 150,width = 400,align = "middle")
+#     }else if(num == 36){
+#       img(src="37.PNG",height = 150,width = 400,align = "middle")
+#     }else if(num == 37){
+#       img(src="38.PNG",height = 150,width = 400,align = "middle")
+#     }
+#   })
+#   
+#   
+#   ####logical flow of answering questions; some extra code to deal with button disabling sequence####
+#   #these observers are for before the game is begun
+#   observeEvent(input$go3, {
+#     updateButton(session, "submit", disabled = TRUE)
+#   })
+#   observeEvent(input$go3, {
+#     updateButton(session, "nextButton", disabled = TRUE)
+#   })
+#   
+#   #these apply to if the game has already been started 
+#   observeEvent(input$submit, {
+#     # (validate) makes sure the player selected an answer when he pressed submit
+#     num <- as.character(numbers$question[length(numbers$question)])
+#     # this (directly below) has been hard coded to correspond with the number of questions in the question bank
+#     ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
+#     else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+#     
+#     # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
+#     validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
+#     
+#     updateButton(session, 'submit', style = "color: white;", disabled = TRUE)
+#     updateButton(session, 'nextButton', style = "color: white;", disabled = FALSE)
+#     output$directions <- renderText({"Now press the next button"})
+#   })
+#   observeEvent(input$image_click, {
+#     validate(need(is.null(game()), label='Game is over'))
+#     
+#     if(!(clicks$A > (clicks$C + 1))){
+#       updateButton(session, 'submit', style = "color: white;", disabled = FALSE)
+#       output$directions <- renderText({"Now answer the question and press submit"})
+#     }
+#   })
+#   
+#   ####checks answer####
+#   answers <- reactiveVal(c(rep('', Qs)))
+#   observeEvent(input$submit, {
+#     #(validate) makes sure the player selected an answer when he pressed submit
+#     num <- as.character(numbers$question[length(numbers$question)])
+#     # this (directly below) has been hard coded to correspond with the number of questions in the question bank
+#     ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
+#     else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+#     
+#     # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
+#     validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
+#     
+#     temp <- answers()
+#     num <- as.character(numbers$question[length(numbers$question)])
+#     # this (directly below) has been hard coded to correspond with the number of questions in the question bank
+#     ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
+#     else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+#     
+#     if(ans == bank[num, 3]){
+#       temp2 <- "correct"
+#     }else{
+#       temp2 <- "incorrect"
+#     }
+#     temp[num] <- temp2
+#     answers(temp)
+#     container[(length(container)+1)] <<- ifelse(temp[num] == "correct", 1, 0)
+#     
+#   })
+# }
+# 
+# 
 boastUtils::boastApp(ui = ui, server = server)
-
+# 
