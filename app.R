@@ -156,7 +156,8 @@ ui <- list(
             r giving us permission to use his questions, and special thanks to
             Professor Scott Roths, Penn State University, for help on using time
             series ARIMA functions, and special thanks to Angela Ting for help
-            with applying the front-end design.",
+            with applying the front-end design. This app was updated by Shravani 
+            Samala in 2021.",
             br(),
             br(),
             br(),
@@ -215,6 +216,7 @@ ui <- list(
                     style = "default", 
                     size = "large")
               ),
+              br(), 
         ),
         
         #### Set up the Simulation Page ----
@@ -360,6 +362,7 @@ ui <- list(
                   style = "default", 
                   size = "large")
             ),
+            br(), 
         ),
         
         #### Set up the Data Page ----
@@ -672,14 +675,6 @@ ui <- list(
                   
                   )
               )
-            ),
-            div(style = "text-align: center",
-                bsButton(
-                  inputId = "go3",
-                  label = "GO!",
-                  icon("bolt"),
-                  style = "default",
-                  size = "large")
             )
         ), 
         
@@ -849,12 +844,7 @@ server <- function(session, input, output) {
       inputId = "pages",
       selected = "data")
   })
-  observeEvent(input$go3,{
-    updateTabItems(
-      session = session,
-      inputId = "pages",
-      selected = "game")
-  })
+  
   observeEvent(input$go4,{
     # if(!(input$trend & !input$trend1 & !input$trend2 & !input$trend3)){
     updateTabsetPanel(
