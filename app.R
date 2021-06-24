@@ -138,7 +138,7 @@ ui <- list(
             br(), 
             div(style = "text-align: center",
                 bsButton(inputId = "go0", 
-                         label = "GO!",
+                         label = "Prerequisites!",
                          icon("book"),
                          style = "default",
                          size = "large")
@@ -681,8 +681,131 @@ ui <- list(
                   style = "default",
                   size = "large")
             )
-        )
+        ), 
         
+        #### Set up the References Page ----
+        tabItem(
+          tabName = "references",
+          withMathJax(),
+          h2("References"),
+          p(
+            class = "hangingindent",
+            "Attali, D. and Edwards, T. (2020) shinyalert: Easily Create Pretty
+            Popup Messages (Modals) in ‘Shiny’. R package version 2.0.0.
+            Available from https://cran.r-project.org/package=shinyalert"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Attali, D. (2016). shinyjs: Easily Improve the User Experience of
+            Your Shiny Apps in Seconds. R package version 2.0.0.
+            Available from https://cran.r-project.org/package=shinyjs"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Bache, S. and Wickham, H. (2014). magrittr: A Forward-Pipe Operator
+            for R. R package version 1.5. Available from 
+            https://cran.r-project.org/package=magrittr"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Bailey, E. (2015). shinyBS: Twitter bootstrap components for shiny.
+            (v0.61). [R package]. Available from
+            https://CRAN.R-project.org/package=shinyBS"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Bivand, R., Keitt, T. and Rowlingson, B. (2018). rgdal: Bindings for
+            the ‘Geospatial’ Data Abstraction Library. R package version 1.3-3.
+            Available from https://cran.r-project.org/package=rgdal"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Carey, R. and Hatfield, N. (2020). boastUtils: BOAST Utilities. R 
+            package version 0.1.6.3. Available from 
+            https://github.com/EducationShinyAppTeam/boastUtils"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Chan, K. and Ripley, B. (2018). TSA: Time Series Analysis. R package
+            version 1.3. Available from https://cran.r-project.org/package=TSA"
+          ), 
+          
+          p(
+            class = "hangingindent",
+            "Chang, W., Cheng, J., Allaire, J., Xie, Y. and McPherson, J. (2017).
+            shiny: Web Application Framework for R. R package version 1.6.0.
+            Available from https://cran.r-project.org/package=shiny"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Chang, W. and Ribeiro, B. (2018). shinydashboard: Create Dashboards
+            with ‘Shiny’. R package version 0.7.1 Available from
+            https://cran.r-project.org/package=shinydashboard"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Cheng, J., Karambelkar, B., and Xie, Y. (2018). leaflet: Create 
+            Interactive Web Maps with the JavaScript ‘Leaflet’ Library. R package
+            version 2.0.1.1. Available from https://cran.r-project.org/package=leaflet"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Hijmans, R. (2017). raster: Geographic Data Analysis and Modeling.
+            R package version 2.6-7. Available from
+            https://cran.r-project.org/package=raster"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Perrier, V., Meyer, F. and Granjon, D. (2018). shinyWidgets: Custom
+            Inputs Widgets for Shiny. R package version 0.6.0. Available from
+            https://cran.r-project.org/package=shinyWidgets"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "R Core Team (2018). stats: A language and environment for statistical
+            computing. R Foundation for Statistical Computing, Vienna, Austria.
+            R package version 0.2. Available from
+            https://github.com/arunsrinivasan/cran.stats"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Sievert, C., Parmer, C., Hocking, T., Chamberlain, S., Ram, K., 
+            Corvellec, M. and Despouy, P. (2017). plotly: Create Interactive Web
+            Graphics via ‘plotly.js’. R package version 4.9.3. Available from
+            https://cran.r-project.org/package=plotly"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Wickham, H. (2016). ggplot2: Elegant Graphics for Data Analysis.
+            Springer-Verlag New York. R package version tidyerse.
+            Available from https://ggplot2.tidyverse.org/"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Wickham, H. and Henry, L. (2018). tidyr: Tidy Messy Data. R package
+            version 1.1.3. Available from https://cran.r-project.org/package=tidyr"
+          ),
+          
+          p(
+            class = "hangingindent",
+            "Xie, Y. (2016) . DT: A Wrapper of the JavaScript Library ‘DataTables’.
+            R package version 0.2. Available from https://cran.r-project.org/package=DT"
+          )
+        ) 
       )
     )
   )
