@@ -4,27 +4,20 @@ library(shinyjs)
 library(shinyBS)
 library(shinyalert)
 library(plotly)
-#library(grid)
 library(stats)
 library(TSA)
 library(ggplot2)
 library(magrittr)
 library(tidyr)
-#library(rlang)
-#library(RColorBrewer)
 library(raster)
 library(rgdal)
 library(DT)
-#library(V8)
-#library(discrimARTs)
 library(leaflet)
 library(raster)
 library(shinyWidgets)
 library(boastUtils)
 
 
-GRID_SIZE <- 3
-TILE_COUNT <- GRID_SIZE ^ 2
 
 # Define UI for App ----
 ui <- list(
@@ -799,7 +792,8 @@ ui <- list(
             class = "hangingindent",
             "Xie, Y. (2016) . DT: A Wrapper of the JavaScript Library ‘DataTables’.
             R package version 0.2. Available from https://cran.r-project.org/package=DT"
-          )
+          ) 
+          
         ) 
       )
     )
