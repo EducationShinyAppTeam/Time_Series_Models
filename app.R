@@ -17,8 +17,6 @@ library(raster)
 library(shinyWidgets)
 library(boastUtils)
 
-
-
 # Define UI for App ----
 ui <- list(
   ## Create the app page ----
@@ -63,8 +61,8 @@ ui <- list(
       tabItems(
         #### Set up the Overview Page ----
         tabItem(tabName = "overview",
-                h1("Times Series Models"),
-                p("In this app the goal is to become more familiar with time series 
+            h1("Times Series Models"),
+            p("In this app the goal is to become more familiar with time series 
             analysis."),
             
             p("In particular, the first part requires students to engage with 
@@ -196,6 +194,7 @@ ui <- list(
         
         #### Set up the Simulation Page ----
         tabItem(tabName = "sim",
+          withMathJax(), 
           #tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
           h2("Simulation"), 
           p("Use the sliders for the coefficients and explore how changing parameter
@@ -236,7 +235,7 @@ ui <- list(
                          #h5(p(withMathJax(textOutput("Phi1")))),
                          sliderInput(
                            inputId = "phi1",
-                           label = "Phi1",
+                           label = "\\(\\Phi_1\\)",
                            min = -0.9,
                            max = 0.9,
                            step = 0.1,
@@ -247,7 +246,7 @@ ui <- list(
                            condition = "input.p == '2'",
                            
                            sliderInput("phi2",
-                                       label = "Phi2",
+                                       label = "\\(\\Phi_2\\)",
                                        min = -0.9,
                                        max = 0.9,
                                        step = 0.1,
@@ -274,20 +273,21 @@ ui <- list(
                          condition = ("input.q == '1' || input.q == '2'"),
                          #h5(p(withMathJax(textOutput("Phi1")))),
                          
-                         sliderInput("theta1",
-                                     label = "Theta1",
-                                     min = -0.9,
-                                     max = 0.9,
-                                     step = 0.1,
-                                     value = 0.5,
-                                     ticks = T),
+                         sliderInput(
+                           inputId = "theta1",
+                           label = "\\(\\Theta_1\\)",
+                           min = -0.9,
+                           max = 0.9,
+                           step = 0.1,
+                           value = 0.5,
+                           ticks = T),
                          
                          conditionalPanel(
                            condition = ("input.q == '2'"),
                            
                            sliderInput(
                              inputId = "theta2",
-                             label = "Theta2",
+                             label = "\\(\\Theta_2\\)",
                              min = -0.9,
                              max = 0.5,
                              step = 0.1,
