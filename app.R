@@ -2,7 +2,7 @@ library(shinydashboard)
 library(shiny)
 library(shinyjs)
 library(shinyBS)
-library(shinyalert)
+#library(shinyalert)
 library(plotly)
 library(stats)
 library(TSA)
@@ -10,9 +10,9 @@ library(ggplot2)
 library(magrittr)
 library(tidyr)
 library(raster)
-library(rgdal)
-library(DT)
-library(leaflet)
+#library(rgdal)
+#library(DT)
+#library(leaflet)
 library(raster)
 library(shinyWidgets)
 library(boastUtils)
@@ -44,7 +44,7 @@ ui <- list(
       sidebarMenu(
         id = "pages",
         menuItem("Overview", tabName = "overview", icon = icon("dashboard")),
-        menuItem("Prerequisite", tabName = "pre", icon = icon("book")),
+        menuItem("Prerequisites", tabName = "pre", icon = icon("book")),
         menuItem("Simulation", tabName = "sim", icon = icon("wpexplorer")),
         menuItem("Analyzing Real Data", tabName = "data", icon = icon("cogs")),
         menuItem("References", tabName = "references", icon = icon("leanpub"))
@@ -63,20 +63,16 @@ ui <- list(
       tabItems(
         #### Set up the Overview Page ----
         tabItem(tabName = "overview",
-                h1("Times Series Model:"),
+                h1("Times Series Models"),
                 p("In this app the goal is to become more familiar with time series 
             analysis."),
-            p("In the three parts of the app, you will explore time series with 
-            simulations, challange yourself with time series analysis, and review
-            your knowledge of associated material with a game."),
+            
             p("In particular, the first part requires students to engage with 
             simulations so they could find out how model equations may relate to
             the graphical representation of the time series. The second feature
             walks the user through time series analysis of a selected real world
             data set. The user will make the data stationary, fit a model, and
-            observe the quality of their model in this analysis. The third feature
-            will quiz the user about time series concepts as a part of a fun
-            tic-tac-toe game."),
+            observe the quality of their model in this analysis."),
             br(),
             
             h2("Instructions:"),
@@ -92,7 +88,7 @@ ui <- list(
             br(), 
             h4("Time Series Analysis with real data:"),
             
-            tags$li("In the first tab, select the data set that you would like
+            tags$li("Select the data set that you would like
                      to analyze, and fit transformations until the data seems
                      stationary."),
             tags$li("Here, you must consider that the last 12 observations of
@@ -112,20 +108,6 @@ ui <- list(
             ),
             
             br(), 
-            h4("Time Series Concept Review Game:"),
-            tags$li("Click the tic-tac-toe image to begin."),
-            tags$li("To play the game, you will select the square that you want
-                     to place an X."),
-            tags$li("Then you will answer the question that is given, if you get
-                     it right, an X will go in the square you selected - if not,
-                     an O will go in that spot."),
-            tags$li("You can only submit an answer after choosing a spot on the
-                     image."),
-            tags$li("You are playing as the X's, the object of the game is to
-                     get 3 X's in a row."),
-            tags$li("You win when 3 X's line up horizontally, vertically, or
-                     diagonally, and you lose when 3 O's line up horizontally,
-                     vertically or diagonally, otherwise the game results in a tie."),
             
             br(), 
             br(), 
@@ -161,160 +143,160 @@ ui <- list(
         
         #### Set up the Prerequisites Page ----
         tabItem(tabName = "pre",
-                h2("Background"),
-                h3("Stationarity:"),
-                p("Diagnostics for stationarity include looking for constant mean
-               (or, trend) and variance over time"),
-               tags$ul(
-                 tags$li("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
-                 tags$li("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
-                 tags$li("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
-               ), 
-               
-               h3("Autocorrelation Functions of Stationary Time Series:"),
-               p("We typically trust the dashed lines in the autocorrelation function
-               (ACF) plots to be the significance cut-off bounds for any lag's
-               correlation"),
-               p("In a model with non-zero autoregressive (AR) and moving average
-               (MA) parts, there is no logical interpretation for both ACFS cutting
-               off, thus,"),
-               tags$ul(
-                 tags$li("For AR(p) models, the ACF will tail off and the PACF will
-                      cut off after lag p."),
-                 tags$li("For MA(q) models, the ACF will cut off after lag q, and
-                      the PACF will tail off."),
-                 tags$li("For ARMA(p, q) models, both the ACF and the PACF will both
-                      tail off.")
-               ),
-               p("The ARMA subsets plot is not the best tool for determining ARMA(p,q)
-               orders, and thus will only be used as a tie breaker or guide after
-               the ACF and PACF plots have been thoroughly inspected."),
-               br(), 
-               h3("Model Diagnostics:"),
-               p("The ARIMA model aims to forecast future values of a stationary time
-              series by estimating a mathematical function to explain the underlying
-              correlation structure. For this reason, the ACF and PACF of the residuals
-              of the ARIMA model that has been fitted should not contain any significant
-              remaing correlation."),
-              p("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model."),
-              
-              br(),
-              br(), 
-              
-              div(style = "text-align: center",
-                  bsButton(
-                    inputId = "go1", 
-                    label = "GO!", 
-                    icon("wpexplorer"), 
-                    style = "default", 
-                    size = "large")
-              ),
-              br(), 
+          h2("Background"),
+          h3("Stationarity:"),
+          p("Diagnostics for stationarity include looking for constant mean
+         (or, trend) and variance over time"),
+         tags$ul(
+           tags$li("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
+           tags$li("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
+           tags$li("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
+         ), 
+         
+         h3("Autocorrelation Functions of Stationary Time Series:"),
+         p("We typically trust the dashed lines in the autocorrelation function
+         (ACF) plots to be the significance cut-off bounds for any lag's
+         correlation"),
+         p("In a model with non-zero autoregressive (AR) and moving average
+         (MA) parts, there is no logical interpretation for both ACFS cutting
+         off, thus,"),
+         tags$ul(
+           tags$li("For AR(p) models, the ACF will tail off and the PACF will
+                cut off after lag p."),
+           tags$li("For MA(q) models, the ACF will cut off after lag q, and
+                the PACF will tail off."),
+           tags$li("For ARMA(p, q) models, both the ACF and the PACF will both
+                tail off.")
+         ),
+         p("The ARMA subsets plot is not the best tool for determining ARMA(p,q)
+         orders, and thus will only be used as a tie breaker or guide after
+         the ACF and PACF plots have been thoroughly inspected."),
+         br(), 
+         h3("Model Diagnostics:"),
+         p("The ARIMA model aims to forecast future values of a stationary time
+        series by estimating a mathematical function to explain the underlying
+        correlation structure. For this reason, the ACF and PACF of the residuals
+        of the ARIMA model that has been fitted should not contain any significant
+        remaing correlation."),
+        p("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model."),
+        
+        br(),
+        br(), 
+        
+        div(style = "text-align: center",
+          bsButton(
+            inputId = "go1", 
+            label = "GO!", 
+            icon("wpexplorer"), 
+            style = "default", 
+            size = "large")
+        ),
+        br(), 
         ),
         
         #### Set up the Simulation Page ----
         tabItem(tabName = "sim",
-                #tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
-                h2("Simulation"), 
-                p("Use the sliders for the coefficients and explore how changing parameter
-            values affects the time series plot."),
-            p("Use the drop down menus and observe how different orders of models
-            effect the autocorrelation function (ACF) and partial autocorrelation
-            function (PACF) plots."),
-            br(),
-            fluidPage(
-              fluidRow(
-                column(width = 4,
-                       selectInput("models","Models",
-                                   list("Autoregressive" = "AR",
-                                        "Moving Average" = "MA",
-                                        "Autoregressive Moving Average" = "ARMA")
-                       ),
-                       sliderInput(
-                         inputId = "n",
-                         label = "Sample Size",
-                         min = 10,
-                         max = 1000,
-                         step = 5,
-                         value = 20,
-                         ticks = T
+          #tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
+          h2("Simulation"), 
+          p("Use the sliders for the coefficients and explore how changing parameter
+          values affects the time series plot."),
+          p("Use the drop down menus and observe how different orders of models
+          effect the autocorrelation function (ACF) and partial autocorrelation
+          function (PACF) plots."),
+          br(),
+          fluidPage(
+            fluidRow(
+              column(width = 4,
+                     selectInput("models","Models",
+                                 list("Autoregressive" = "AR",
+                                      "Moving Average" = "MA",
+                                      "Autoregressive Moving Average" = "ARMA")
+                     ),
+                     sliderInput(
+                       inputId = "n",
+                       label = "Sample Size",
+                       min = 10,
+                       max = 1000,
+                       step = 5,
+                       value = 20,
+                       ticks = T
+                     ),
+                     conditionalPanel(
+                       #AR
+                       condition = ("input.models=='AR' || input.models=='ARMA'"),
+                       h4(p("AR(p)")),
+                       
+                       selectInput(
+                         inputId = "p",
+                         label = "p order",
+                         list( "1", "2")
                        ),
                        conditionalPanel(
-                         #AR
-                         condition = ("input.models=='AR' || input.models=='ARMA'"),
-                         h4(p("AR(p)")),
-                         
-                         selectInput(
-                           inputId = "p",
-                           label = "p order",
-                           list( "1", "2")
+                         condition = ("input.p == '1' || input.p == '2'"),
+                         #h5(p(withMathJax(textOutput("Phi1")))),
+                         sliderInput(
+                           inputId = "phi1",
+                           label = "Phi1",
+                           min = -0.9,
+                           max = 0.9,
+                           step = 0.1,
+                           value = 0.5,
+                           ticks = T
                          ),
                          conditionalPanel(
-                           condition = ("input.p == '1' || input.p == '2'"),
-                           #h5(p(withMathJax(textOutput("Phi1")))),
-                           sliderInput(
-                             inputId = "phi1",
-                             label = "Phi1",
-                             min = -0.9,
-                             max = 0.9,
-                             step = 0.1,
-                             value = 0.5,
-                             ticks = T
-                           ),
-                           conditionalPanel(
-                             condition = "input.p == '2'",
-                             
-                             sliderInput("phi2",
-                                         label = "Phi2",
-                                         min = -0.9,
-                                         max = 0.9,
-                                         step = 0.1,
-                                         value = 0,
-                                         ticks = T)
-                           )
-                         )
-                       ),
-                       conditionalPanel(
-                         condition = ("input.models=='ARMA'"),
-                         hr()
-                       ),
-                       conditionalPanel(
-                         #MA
-                         condition = ("input.models=='MA' || input.models=='ARMA'"),
-                         h4(p("MA(q)")),
-                         
-                         selectInput(
-                           inputId = "q",
-                           label = "q order",
-                           list("1","2")
-                         ),
-                         conditionalPanel(
-                           condition = ("input.q == '1' || input.q == '2'"),
-                           #h5(p(withMathJax(textOutput("Phi1")))),
+                           condition = "input.p == '2'",
                            
-                           sliderInput("theta1",
-                                       label = "Theta1",
+                           sliderInput("phi2",
+                                       label = "Phi2",
                                        min = -0.9,
                                        max = 0.9,
                                        step = 0.1,
-                                       value = 0.5,
-                                       ticks = T),
+                                       value = 0,
+                                       ticks = T)
+                         )
+                       )
+                     ),
+                     conditionalPanel(
+                       condition = ("input.models=='ARMA'"),
+                       hr()
+                     ),
+                     conditionalPanel(
+                       #MA
+                       condition = ("input.models=='MA' || input.models=='ARMA'"),
+                       h4(p("MA(q)")),
+                       
+                       selectInput(
+                         inputId = "q",
+                         label = "q order",
+                         list("1","2")
+                       ),
+                       conditionalPanel(
+                         condition = ("input.q == '1' || input.q == '2'"),
+                         #h5(p(withMathJax(textOutput("Phi1")))),
+                         
+                         sliderInput("theta1",
+                                     label = "Theta1",
+                                     min = -0.9,
+                                     max = 0.9,
+                                     step = 0.1,
+                                     value = 0.5,
+                                     ticks = T),
+                         
+                         conditionalPanel(
+                           condition = ("input.q == '2'"),
                            
-                           conditionalPanel(
-                             condition = ("input.q == '2'"),
-                             
-                             sliderInput(
-                               inputId = "theta2",
-                               label = "Theta2",
-                               min = -0.9,
-                               max = 0.5,
-                               step = 0.1,
-                               value = 0.1,
-                               ticks = T
-                             )
+                           sliderInput(
+                             inputId = "theta2",
+                             label = "Theta2",
+                             min = -0.9,
+                             max = 0.5,
+                             step = 0.1,
+                             value = 0.1,
+                             ticks = T
                            )
                          )
                        )
+                     )
                 ),
                 column(width = 8,
                        fluidRow(
@@ -676,12 +658,6 @@ ui <- list(
           tabName = "references",
           withMathJax(),
           h2("References"),
-          p(
-            class = "hangingindent",
-            "Attali, D. and Edwards, T. (2020) shinyalert: Easily Create Pretty
-            Popup Messages (Modals) in ‘Shiny’. R package version 2.0.0.
-            Available from https://cran.r-project.org/package=shinyalert"
-          ),
           
           p(
             class = "hangingindent",
@@ -702,13 +678,6 @@ ui <- list(
             "Bailey, E. (2015). shinyBS: Twitter bootstrap components for shiny.
             (v0.61). [R package]. Available from
             https://CRAN.R-project.org/package=shinyBS"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Bivand, R., Keitt, T. and Rowlingson, B. (2018). rgdal: Bindings for
-            the ‘Geospatial’ Data Abstraction Library. R package version 1.3-3.
-            Available from https://cran.r-project.org/package=rgdal"
           ),
           
           p(
@@ -736,13 +705,6 @@ ui <- list(
             "Chang, W. and Ribeiro, B. (2018). shinydashboard: Create Dashboards
             with ‘Shiny’. R package version 0.7.1 Available from
             https://cran.r-project.org/package=shinydashboard"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Cheng, J., Karambelkar, B., and Xie, Y. (2018). leaflet: Create 
-            Interactive Web Maps with the JavaScript ‘Leaflet’ Library. R package
-            version 2.0.1.1. Available from https://cran.r-project.org/package=leaflet"
           ),
           
           p(
@@ -786,13 +748,7 @@ ui <- list(
             class = "hangingindent",
             "Wickham, H. and Henry, L. (2018). tidyr: Tidy Messy Data. R package
             version 1.1.3. Available from https://cran.r-project.org/package=tidyr"
-          ),
-          
-          p(
-            class = "hangingindent",
-            "Xie, Y. (2016) . DT: A Wrapper of the JavaScript Library ‘DataTables’.
-            R package version 0.2. Available from https://cran.r-project.org/package=DT"
-          ) 
+          )
           
         ) 
       )
@@ -1421,8 +1377,16 @@ server <- function(session, input, output) {
   
   #### step2 code ####
   counter <- reactiveValues(a=0,b=0)
-  # when the model doesnt change after we leave the 3rd tab (step3) and also still hasnt changed when the user comes back to the 3rd tab, we dont want to recalculate the same fit, so we create "counter" reactive values to account for this in the fit() reactive handler and the model() observation handler
-  # {idk if this still applies i changed the counter code since}:  must keep in mind that (when both fit and model are created in a reactive handler) though we want model list (counter$a) to govern what happens, its hard when you consider the fact that it is called inside the reactive call to fit (since reactive handlers are "lazy")
+  # when the model doesnt change after we leave the 3rd tab (step3) and also still 
+  # hasnt changed when the user comes back to the 3rd tab, we dont want to recalculate
+  #the same fit, so we create "counter" reactive values to account for this in the fit() 
+  #reactive handler and the model() observation handler
+  
+  # {idk if this still applies i changed the counter code since}:  must keep in 
+  #mind that (when both fit and model are created in a reactive handler) though 
+  #we want model list (counter$a) to govern what happens, its hard when you consider 
+  #the fact that it is called inside the reactive call to fit (since reactive handlers
+  #are "lazy")
   
   model <- reactiveVal(NULL)
   observeEvent(label = 'model()',
