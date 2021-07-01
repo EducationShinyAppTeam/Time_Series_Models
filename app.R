@@ -42,7 +42,7 @@ ui <- list(
       sidebarMenu(
         id = "pages",
         menuItem("Overview", tabName = "overview", icon = icon("dashboard")),
-        menuItem("Prerequisites", tabName = "pre", icon = icon("book")),
+        menuItem("Prerequisites", tabName = "prerequisites", icon = icon("book")),
         menuItem("Simulation", tabName = "sim", icon = icon("wpexplorer")),
         menuItem("Analyzing Real Data", tabName = "data", icon = icon("cogs")),
         menuItem("References", tabName = "references", icon = icon("leanpub"))
@@ -56,7 +56,7 @@ ui <- list(
     #What is the stuff below for?
     dashboardBody(
       tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "Feature.css")
+        #tags$link(rel = "stylesheet", type = "text/css", href = "Feature.css")
       ),
       tabItems(
         #### Set up the Overview Page ----
@@ -140,7 +140,7 @@ ui <- list(
         ),
         
         #### Set up the Prerequisites Page ----
-        tabItem(tabName = "pre",
+        tabItem(tabName = "prerequisites",
           h2("Background"),
           h3("Stationarity:"),
           p("Diagnostics for stationarity include looking for constant mean
@@ -748,7 +748,9 @@ ui <- list(
             class = "hangingindent",
             "Wickham, H. and Henry, L. (2018). tidyr: Tidy Messy Data. R package
             version 1.1.3. Available from https://cran.r-project.org/package=tidyr"
-          )
+          ), 
+          br(), 
+          boastUtils::copyrightInfo()
           
         ) 
       )
@@ -780,7 +782,7 @@ server <- function(session, input, output) {
     updateTabItems(
       session = session, 
       inputId = "pages", 
-      selected = "pre")
+      selected = "prerequisites")
   })
   observeEvent(input$go1,{
     updateTabItems(
