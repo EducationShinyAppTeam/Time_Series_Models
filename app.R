@@ -134,7 +134,7 @@ ui <- list(
             br(),
             br(),
             br(),
-            div(class = "updated", "Last Update: 5/14/2021 by NJH.")
+            div(class = "updated", "Last Update: 7/1/2021 by SJS.")
             )
             
         ),
