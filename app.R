@@ -235,7 +235,7 @@ ui <- list(
                          #h5(p(withMathJax(textOutput("Phi1")))),
                          sliderInput(
                            inputId = "phi1",
-                           label = "\\(\\Phi_1\\)",
+                           label = "\\(\\phi_1\\)",
                            min = -0.9,
                            max = 0.9,
                            step = 0.1,
@@ -246,7 +246,7 @@ ui <- list(
                            condition = "input.p == '2'",
                            
                            sliderInput("phi2",
-                                       label = "\\(\\Phi_2\\)",
+                                       label = "\\(\\phi_2\\)",
                                        min = -0.9,
                                        max = 0.9,
                                        step = 0.1,
@@ -275,7 +275,7 @@ ui <- list(
                          
                          sliderInput(
                            inputId = "theta1",
-                           label = "\\(\\Theta_1\\)",
+                           label = "\\(\\theta_1\\)",
                            min = -0.9,
                            max = 0.9,
                            step = 0.1,
@@ -287,7 +287,7 @@ ui <- list(
                            
                            sliderInput(
                              inputId = "theta2",
-                             label = "\\(\\Theta_2\\)",
+                             label = "\\(\\theta_2\\)",
                              min = -0.9,
                              max = 0.5,
                              step = 0.1,
