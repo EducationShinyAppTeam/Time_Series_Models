@@ -381,8 +381,8 @@ ui <- list(
                             list("Choose" = "Choose",
                                  "Internet Traffic" = "internet",
                                  "Monthly Traffic Fatalities" = "monthly",
-                                 "varve" = "varve",
-                                 "sheep" = "sheep",
+                                 "Varve" = "varve",
+                                 "Sheep" = "sheep",
                                  "Southern Oscillation Index" = "soi",
                                  "Daily Max Temp State College" = "temperature")
                           ),
