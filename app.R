@@ -74,6 +74,7 @@ ui <- list(
             h4("Diagnostics for stationarity include looking for constant mean 
                (or, trend) and variance over time"),
             column(11, offset=1,
+                   
               h4("Constant mean is associated with data that does not have any 
                  sort of vertical (typically linear) trend over time."),
               h4("Seasonality could also be apparent in the mean structure. 
