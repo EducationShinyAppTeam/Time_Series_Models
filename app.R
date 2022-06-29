@@ -66,52 +66,49 @@ ui <- list(
       tabItems(
         #### Prerequisite page ----
         tabItem(tabName = "pre",
-                h3(strong("Background: Time Series Models")),
-                hr(),
-                h4("Recall the following:"),
-                column(11,
-                       h3(tags$li("Stationarity:")),
-                       h4("Diagnostics for stationarity include looking for constant mean (or, trend) and variance over time"),
-                       column(11, offset=1,
-                              h4("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
-                              h4("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
-                              h4("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
-                       ),
-                       h3(tags$li("Autocorrelation Functions of Stationary Time Series:")),
-                       h4("We typically trust the dashed lines in the autocorrelation function (ACF) plots to be the significance cut-off bounds for any lag's correlation"),
-                       h4("In a model with non-zero autoregressive (AR) and moving average (MA) parts, there is no logical interpretation for both ACFS cutting off, thus,"),
-                       column(11, offset=1,
-                              h4(tags$li("For AR(p) models, the ACF will tail off and the PACF will cut off after lag p.")),
-                              h4(tags$li("For MA(q) models, the ACF will cut off after lag q, and the PACF will tail off.")),
-                              h4(tags$li("For ARMA(p, q) models, both the ACF and the PACF will both tail off."))
-                       ),
-                       h4("The ARMA subsets plot is not the best tool for determining ARMA(p,q) orders, and thus will only be used as a tie breaker or guide after the ACF and PACF plots have been thoroughly inspected."),
-                       h3(tags$li("Model Diagnostics:")),
-                       h4("The ARIMA model aims to forecast future values of a stationary time series by estimating a mathematical function to explain the underlying correlation structure. For this reason, the ACF and PACF of the residuals of the ARIMA model that has been fitted should not contain any significant remaing correlation."),
-                       h4("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model.")
-                ),
-                fluidRow(
-                  br()
-                ),
-                br(),
-                fluidRow(
-                  div(style = "text-align: center",
-                      bsButton("go0", "Go to the overview", icon("bolt"), style = "danger", size = "large", class="circle grow")
-                  )
-                ),
-                br()
+          h3(strong("Background: Time Series Models")),
+          h4("Recall the following:"),
+          column(
+            11,
+            h3(tags$li("Stationarity:")),
+            h4("Diagnostics for stationarity include looking for constant mean (or, trend) and variance over time"),
+            column(11, offset=1,
+              h4("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
+              h4("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
+              h4("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
+            ),
+            h3(tags$li("Autocorrelation Functions of Stationary Time Series:")),
+            h4("We typically trust the dashed lines in the autocorrelation function (ACF) plots to be the significance cut-off bounds for any lag's correlation"),
+            h4("In a model with non-zero autoregressive (AR) and moving average (MA) parts, there is no logical interpretation for both ACFS cutting off, thus,"),
+            column(
+              11, offset=1,
+              h4(tags$li("For AR(p) models, the ACF will tail off and the PACF will cut off after lag p.")),
+              h4(tags$li("For MA(q) models, the ACF will cut off after lag q, and the PACF will tail off.")),
+               h4(tags$li("For ARMA(p, q) models, both the ACF and the PACF will both tail off."))
+            ),
+            h4("The ARMA subsets plot is not the best tool for determining ARMA(p,q) orders, and thus will only be used as a tie breaker or guide after the ACF and PACF plots have been thoroughly inspected."),
+            h3(tags$li("Model Diagnostics:")),
+            h4("The ARIMA model aims to forecast future values of a stationary time series by estimating a mathematical function to explain the underlying correlation structure. For this reason, the ACF and PACF of the residuals of the ARIMA model that has been fitted should not contain any significant remaing correlation."),
+            h4("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model.")
+          ),
+          br(),
+          fluidRow(
+            div(style = "text-align: center",
+              bsButton("go0", "Go to the overview", icon("bolt"), style = "danger", size = "large", class="circle grow")
+            )
+          ),
+          br()
         ),
         #### Overview page ----
         tabItem(
           tabName = "overview",
           h1("Time Series Model"),
-                br(),
-                h3(tags$b("About:")),
-                h4("In this app the goal is to become more familiar with time series analysis."),
-                h4("In the three parts of the app, you will explore time series with simulations, challange yourself with time series analysis, and review your knowledge of associated material with a game."),
-                h4("In particular, the first part requires students to engage with simulations so they could find out how model equations may relate to the graphical representation of the time series. The second feature walks the user through time series analysis of a selected real world data set. The user will make the data stationary, fit a model, and observe the quality of their model in this analysis. The third feature will quiz the user about time series concepts as a part of a fun tic-tac-toe game."),
-                hr(),
-                h3(tags$b("Instructions:")),
+            br(),
+            h3(tags$b("About:")),
+            h4("In this app the goal is to become more familiar with time series analysis."),
+            h4("In the three parts of the app, you will explore time series with simulations, challange yourself with time series analysis, and review your knowledge of associated material with a game."),
+            h4("In particular, the first part requires students to engage with simulations so they could find out how model equations may relate to the graphical representation of the time series. The second feature walks the user through time series analysis of a selected real world data set. The user will make the data stationary, fit a model, and observe the quality of their model in this analysis. The third feature will quiz the user about time series concepts as a part of a fun tic-tac-toe game."),
+            h3(tags$b("Instructions:")),
                 
                 h3("Simulation Exploration:"),
                 column(11,
@@ -167,7 +164,16 @@ ui <- list(
                 
                 hr(),
                 h3(tags$b("Acknowledgements:")),
-                h4("This app was conceived in its entirety by Ryan Voyack and Yubaihe Grace Zhou in June and July of 2018 with Ryan leading on the data analysis and game components and Grace leading on the simulation components . Special thanks to Saurabh Jugalkishor Jaju from AnalyticsVidhya.com and University of California, Berkeley, for giving us permission to use his questions, and special thanks to Professor Scott Roths, Penn State University, for help on using time series ARIMA functions, and special thanks to Angela Ting for help with applying the front-end design."),
+                h4("This app was conceived in its entirety by Ryan Voyack and 
+                   Yubaihe Grace Zhou in June and July of 2018 with Ryan 
+                   leading on the data analysis and game components and Grace 
+                   leading on the simulation components . Special thanks to 
+                   Saurabh Jugalkishor Jaju from AnalyticsVidhya.com and 
+                   University of California, Berkeley, for giving us permission 
+                   to use his questions, and special thanks to Professor Scott 
+                   Roths, Penn State University, for help on using time series 
+                   ARIMA functions, and special thanks to Angela Ting for help 
+                   with applying the front-end design."),
                 br()
                 # h3(p("Explore Time Series with simulations")),
                 # div(style = "text-align: center",
@@ -178,46 +184,38 @@ ui <- list(
                 #     bsButton("go2", "G O !", size = "large", style = "primary")),
         ),
         
-        tabItem(tabName = "sim",
-                tags$style(type= "text/css", ".content-wrapper,.right-side {background-color: white;}"),
-                
-                div(style="display: inline-block;vertical-align:top;",
-                    tags$a(href='https://shinyapps.science.psu.edu/',tags$img(src='homebut.PNG', width = 19))
-                ),
-                div(style="display: inline-block;vertical-align:top;",
-                    circleButton("info1",icon = icon("info"), status = "myClass",size = "xs")
-                ),
-                fluidPage(
-                  fluidRow(
-                    column(width = 4,
-                           selectInput("models","Models",
-                                       list( "Autoregressive" = "AR",
-                                             "Moving Average" = "MA",
-                                             "Autoregressive Moving Average" = "ARMA"
-                                       )
-                           ),
-                           sliderInput("n",
-                                       label = "Sample Size",
-                                       min = 10,
-                                       max = 1000,
-                                       step = 5,
-                                       value = 20,
-                                       ticks = T
-                           ),
-                           conditionalPanel(
-                             #AR
-                             condition = ("input.models=='AR' || input.models=='ARMA'"),
-                             h4(p("AR(p)")),
-                             
-                             selectInput("p","p order",
-                                         list( "1",
-                                               "2"
-                                         )
-                             ),
-                             conditionalPanel(
-                               condition = ("input.p == '1' || input.p == '2'"),
-                               #h5(p(withMathJax(textOutput("Phi1")))),
-                               sliderInput("phi1",
+        tabItem(
+          tabName = "sim",
+          fluidPage(
+          fluidRow(
+          column(
+            width = 4,
+            selectInput(
+              "models","Models",
+              list( "Autoregressive" = "AR",
+                "Moving Average" = "MA",
+                "Autoregressive Moving Average" = "ARMA"
+              )
+            ),
+            sliderInput("n",
+              label = "Sample Size",
+              min = 10,
+              max = 1000,
+              step = 5,
+              value = 20,
+              ticks = T
+            ),
+            conditionalPanel(
+            #AR
+              condition = ("input.models=='AR' || input.models=='ARMA'"),
+              h4(p("AR(p)")),
+              selectInput("p","p order",
+                list( "1","2" )
+              ),
+              conditionalPanel(
+                condition = ("input.p == '1' || input.p == '2'"),
+                #h5(p(withMathJax(textOutput("Phi1")))),
+                sliderInput("phi1",
                                            label = "Phi1",
                                            min = -0.9,
                                            max = 0.9,
@@ -313,19 +311,19 @@ ui <- list(
         ),
         
         #### Datasets ####
-        tabItem(tabName = "data",
-                
-                div(style="display: inline-block;vertical-align:top;",
-                    tags$a(href='https://shinyapps.science.psu.edu/',tags$img(src='homebut.PNG', width = 19))
-                ),
-                div(style="display: inline-block;vertical-align:top;",
-                    circleButton("info2",icon = icon("info"), status = "myClass",size = "xs")
-                ),
-                (tabsetPanel(id = "tabs2",
-                             tabPanel(title = h4("Achieving Stationarity"), value = "step1",
-                                      h4("To begin, please choose from of the data sets below any one that you would like."),
-                                      h4("Use the checkbox options to make your data look satisfactorily stationary."),
-                                      h4("The first part of our analysis is achieving stationarity, so that you can correctly judge the correlation structure to assign to the arima model."),
+        tabItem(
+          tabName = "data",
+          div(style="display: inline-block;vertical-align:top;",
+            circleButton("info2",icon = icon("info"), status = "myClass",size = "xs")
+          ),
+          (
+          tabsetPanel(
+            id = "tabs2",
+            tabPanel(
+              title = h4("Achieving Stationarity"), value = "step1",
+              h4("To begin, please choose from of the data sets below any one that you would like."),
+              h4("Use the checkbox options to make your data look satisfactorily stationary."),
+            h4("The first part of our analysis is achieving stationarity, so that you can correctly judge the correlation structure to assign to the arima model."),
                                       sidebarLayout(
                                         sidebarPanel(
                                           selectInput("sets",tags$b("Choose a Dataset Below"),
@@ -484,13 +482,6 @@ ui <- list(
         ##Concept Game tic-tac-toe
         tabItem(tabName = "game",
                 fluidPage(
-                  
-                  div(style="display: inline-block;vertical-align:top;",
-                      tags$a(href='https://shinyapps.science.psu.edu/',tags$img(src='homebut.PNG', width = 19))
-                  ),
-                  div(style="display: inline-block;vertical-align:top;",
-                      circleButton("info",icon = icon("info"), status = "myClass",size = "xs")
-                  ),
                   fluidRow(
                     div(style = "text-align: center;",
                         h4("If you answer correctly, You will receive an X in the square you chose, if not, it will be an O."),
