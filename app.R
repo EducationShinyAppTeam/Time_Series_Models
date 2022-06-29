@@ -484,96 +484,120 @@ ui <- list(
           ),
           tabPanel(
             title = h4("Determine ARMA order"), value = "step2",
-                                      h4("Now, that you have made your data stationary, you can inspect the resulting acf plots as well as the ARMAsubsets plot below to determine the arima order and fit a model."),
-                                      fluidRow(
-                                        plotOutput("ACF"),
-                                        bsPopover(id="ACF", title = "ACF of transformed data", content = "The blue dashed line represents significance bounds for correlation at different lags in the data.", trigger = "hover", placement = "bottom"),
-                                        plotOutput("PACF"),
-                                        bsPopover(id="PACF", title = "PACF of tranformed data", content = "The blue dashed line represents significance bounds for correlation at different lags in the data.", trigger = "hover", placement = "top")
-                                      ),
-                                      div(style = "text-align: center",
-                                          h4('After you are finished making your choices, press the "Next step!" button below to see how good of a fit your model was.')
-                                      ),
-                                      fluidRow(
-                                        column(4,
-                                               numericInput("p.order", "AR part order", value=0, max=10, min=0),
-                                               numericInput("q.order", "MA part order", value=0, max=10, min=0),
-                                               numericInput("P.order", "Seasonal AR part order", value=0, max=10, min=0),
-                                               numericInput("Q.order", "Seasonal MA part order", value=0, max=10, min=0),
-                                               numericInput("period", "Seasonal Period", value=0, max=12, min=0)
-                                        ),
-                                        column(8,
-                                               plotOutput("subsets"),
-                                               bsPopover(id="subsets", title = "ARMA subsets", content = "This plot shows the best combinations of ARMA orders using AIC. The greyed squares indicate that the parameter is used in the model.", trigger = "hover", placement = "top")
-                                        ),
-                                        div(style = "text-align: center",
-                                            bsButton("go5", "Next step!", style = "primary")
-                                        )
-                                      )
-                             ),
-                             tabPanel(title = h4("Forecast"), value = "step3",
-                                      fluidRow(
-                                        column(11,
-                                               h4("Below you can see how well you fit the data to a time series by seeing the resulting forecasts (plotted against the last 12 observations of the data set, which were hidden from the initial time series plot), this plot will show you-in blue-only the final 100 observations in the data set. You can also observe the correlation structure of the residuals of the arima fit to see if you were able to fully explain the correlation with the model. The progress bar will show you how close you are to the best possible fit for the data set.")
-                                        )
-                                      ),
-                                      fluidRow(
-                                        div(style = "position:relative; z-index: 950;",
-                                            plotlyOutput("forecast")
-                                        ),
-                                        br(),
-                                        # fluidRow(
-                                        #   div(style = "position:relative; z-index: 900;",
-                                        #     div(style = "margin-top: -20vh;",
-                                        #       div(style = "text-align: center",
-                                        #         imageOutput("bar") #, height = "1000px")
-                                        #       )
-                                        #     )
-                                        #   )
-                                        # ),
-                                        
-                                        wellPanel(fluidRow(
-                                          #div(style = "position:relative; z-index: 950;",
-                                          #div(style = "margin-top: -20vh;",
-                                          column(6, plotOutput("fitQuality1")),
-                                          bsPopover(id="fitQuality1", title = "ACF residuals", content = "The ACF and PACF of the residuals of the fitted model can indicate if theres any remaining correlation structure in the data.", trigger = "hover", placement = "top"),
-                                          column(6, plotOutput("fitQuality2")),
-                                          bsPopover(id="fitQuality2", title = "PACF residuals", content = "The ACF and PACF of the residuals of the fitted model can indicate if theres any remaining correlation structure in the data.", trigger = "hover", placement = "top")
-                                          #)
-                                          #)
-                                        )),
-                                        fluidRow(
-                                          div(style = "position:relative; z-index: auto;",
-                                              div(style = "margin-top: -20vh;",
-                                                  column(5, plotOutput("bar")),
-                                                  column(6, 
-                                                         br(),
-                                                         br(),
-                                                         br(),
-                                                         br(),
-                                                         br(), #these are necessary
-                                                         br(),
-                                                         br(),
-                                                         br(),
-                                                         br(),
-                                                         verbatimTextOutput("feedback", placeholder = TRUE)
-                                                  )
-                                              )
-                                          )
-                                          ,
-                                          div(style = "position:relative; z-index: auto;",
-                                              bsPopover(id="bar", title = "Model fit evaluation", content = "This indicates how well your model was fit. 100 would indicate that your model is as good as can be. 0 would indicate that your model was no better than using just the mean as the predictor.", trigger = "hover", placement = "right")
-                                          )
-                                        )#,
-                                        
-                                        # br(),
-                                        
-                                      )
-                             )
-                ))
-                
-                
-                
+            h4("Now, that you have made your data stationary, you can inspect 
+               the resulting acf plots as well as the ARMAsubsets plot below 
+               to determine the arima order and fit a model."),
+            fluidRow(
+              plotOutput("ACF"),
+              bsPopover(id="ACF", title = "ACF of transformed data", 
+                      content = "The blue dashed line represents significance 
+                      bounds for correlation at different lags in the data.", 
+                      trigger = "hover", placement = "bottom"),
+              plotOutput("PACF"),
+              bsPopover(id="PACF", title = "PACF of tranformed data", 
+                      content = "The blue dashed line represents significance 
+                      bounds for correlation at different lags in the data.", 
+                      trigger = "hover", placement = "top")
+            ),
+            div(style = "text-align: center",
+              h4('After you are finished making your choices, press the 
+                "Next step!" button below to see how good of a fit your model 
+                was.')
+            ),
+            fluidRow(
+              column(4,
+                numericInput("p.order", "AR part order", value=0, max=10, min=0),
+                numericInput("q.order", "MA part order", value=0, max=10, min=0),
+                numericInput("P.order", "Seasonal AR part order", 
+                             value=0, max=10, min=0),
+                numericInput("Q.order", "Seasonal MA part order", 
+                             value=0, max=10, min=0),
+                numericInput("period", "Seasonal Period", value=0, max=12, min=0)
+              ),
+              column(8,
+                plotOutput("subsets"),
+                bsPopover(
+                  id="subsets", title = "ARMA subsets", 
+                  content = "This plot shows the best combinations of ARMA 
+                  orders using AIC. The greyed squares indicate that the 
+                  parameter is used in the model.", 
+                  trigger = "hover", placement = "top")
+              ),
+              div(style = "text-align: center",
+                bsButton("go5", "Next step!", style = "primary")
+              )
+            )
+          ),
+          tabPanel(title = h4("Forecast"), value = "step3",
+            fluidRow(
+              column(11,
+                h4("Below you can see how well you fit the data to a time 
+                   series by seeing the resulting forecasts (plotted against 
+                   the last 12 observations of the data set, which were hidden 
+                   from the initial time series plot), this plot will show 
+                   you-in blue-only the final 100 observations in the data set. 
+                   You can also observe the correlation structure of the 
+                   residuals of the arima fit to see if you were able to 
+                   fully explain the correlation with the model. The progress 
+                   bar will show you how close you are to the best possible 
+                   fit for the data set.")
+              )
+            ),
+            fluidRow(
+              div(style = "position:relative; z-index: 950;",
+                plotlyOutput("forecast")
+              ),br(),
+              # fluidRow(
+              #   div(style = "position:relative; z-index: 900;",
+              #     div(style = "margin-top: -20vh;",
+              #       div(style = "text-align: center",
+              #         imageOutput("bar") #, height = "1000px")
+              #       )
+              #     )
+              #   )
+              # ),
+              wellPanel(
+                fluidRow(
+                  #div(style = "position:relative; z-index: 950;",
+                  #div(style = "margin-top: -20vh;",
+                  column(6, plotOutput("fitQuality1")),
+                    bsPopover(id="fitQuality1", title = "ACF residuals", content = "The ACF and PACF of the residuals of the fitted model can indicate if theres any remaining correlation structure in the data.", trigger = "hover", placement = "top"),
+                    column(6, plotOutput("fitQuality2")),
+                    bsPopover(id="fitQuality2", title = "PACF residuals", content = "The ACF and PACF of the residuals of the fitted model can indicate if theres any remaining correlation structure in the data.", trigger = "hover", placement = "top")
+                  #)
+                  #)
+              )),
+              fluidRow(
+                div(style = "position:relative; z-index: auto;",
+                  div(style = "margin-top: -20vh;",
+                    column(5, plotOutput("bar")),
+                    column(6, 
+                      br(),
+                      br(),
+                      br(),
+                      br(),
+                      br(), #these are necessary
+                      br(),
+                      br(),
+                      br(),
+                      br(),
+                      verbatimTextOutput("feedback", placeholder = TRUE)
+                    )
+                  )
+                ),
+                div(style = "position:relative; z-index: auto;",
+                  bsPopover(
+                    id="bar", title = "Model fit evaluation", 
+                    content = "This indicates how well your model was fit. 
+                    100 would indicate that your model is as good as can be. 
+                    0 would indicate that your model was no better than using 
+                    just the mean as the predictor.", trigger = "hover", 
+                    placement = "right")
+                )
+              )
+            )
+          )
+        ))
         ),
         
         ##Concept Game tic-tac-toe
