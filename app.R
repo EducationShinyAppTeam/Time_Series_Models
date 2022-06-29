@@ -71,25 +71,51 @@ ui <- list(
           column(
             11,
             h3(tags$li("Stationarity:")),
-            h4("Diagnostics for stationarity include looking for constant mean (or, trend) and variance over time"),
+            h4("Diagnostics for stationarity include looking for constant mean 
+               (or, trend) and variance over time"),
             column(11, offset=1,
-              h4("Constant mean is associated with data that does not have any sort of vertical (typically linear) trend over time."),
-              h4("Seasonality could also be apparent in the mean structure. Recall that seasonal ARIMA cannot explain a seasonal trend, only seasonal correlations (ARIMA models work to explain correlation structure of a time series AFTER the mean and variance are constant)."),
-              h4("Constant variance is associated with data whose vertical spread (in the valleys and peaks) is constant over the duration of the time series.")
+              h4("Constant mean is associated with data that does not have any 
+                 sort of vertical (typically linear) trend over time."),
+              h4("Seasonality could also be apparent in the mean structure. 
+                 Recall that seasonal ARIMA cannot explain a seasonal trend, 
+                 only seasonal correlations (ARIMA models work to explain 
+                 correlation structure of a time series AFTER the mean and 
+                 variance are constant)."),
+              h4("Constant variance is associated with data whose vertical s
+                 pread (in the valleys and peaks) is constant over the duration
+                 of the time series.")
             ),
             h3(tags$li("Autocorrelation Functions of Stationary Time Series:")),
-            h4("We typically trust the dashed lines in the autocorrelation function (ACF) plots to be the significance cut-off bounds for any lag's correlation"),
-            h4("In a model with non-zero autoregressive (AR) and moving average (MA) parts, there is no logical interpretation for both ACFS cutting off, thus,"),
+            h4("We typically trust the dashed lines in the autocorrelation 
+               function (ACF) plots to be the significance cut-off bounds for 
+               any lag's correlation"),
+            h4("In a model with non-zero autoregressive (AR) and moving average 
+               (MA) parts, there is no logical interpretation for both ACFS 
+               cutting off, thus,"),
             column(
               11, offset=1,
-              h4(tags$li("For AR(p) models, the ACF will tail off and the PACF will cut off after lag p.")),
-              h4(tags$li("For MA(q) models, the ACF will cut off after lag q, and the PACF will tail off.")),
-               h4(tags$li("For ARMA(p, q) models, both the ACF and the PACF will both tail off."))
+              h4(tags$li("For AR(p) models, the ACF will tail off and the PACF 
+                         will cut off after lag p.")),
+              h4(tags$li("For MA(q) models, the ACF will cut off after lag q, 
+                         and the PACF will tail off.")),
+               h4(tags$li("For ARMA(p, q) models, both the ACF and the PACF 
+                          will both tail off."))
             ),
-            h4("The ARMA subsets plot is not the best tool for determining ARMA(p,q) orders, and thus will only be used as a tie breaker or guide after the ACF and PACF plots have been thoroughly inspected."),
+            h4("The ARMA subsets plot is not the best tool for determining 
+               ARMA(p,q) orders, and thus will only be used as a tie breaker or 
+               guide after the ACF and PACF plots have been thoroughly 
+               inspected."),
             h3(tags$li("Model Diagnostics:")),
-            h4("The ARIMA model aims to forecast future values of a stationary time series by estimating a mathematical function to explain the underlying correlation structure. For this reason, the ACF and PACF of the residuals of the ARIMA model that has been fitted should not contain any significant remaing correlation."),
-            h4("Though forecasting is the purpose for fitting an ARIMA model, looking at the forecast itself (against future values that have been reserved) isnt the best way to assess the goodness of the model's fit, this is why we look at the AIC and the ACF plots of the residuals of the model.")
+            h4("The ARIMA model aims to forecast future values of a stationary 
+               time series by estimating a mathematical function to explain the 
+               underlying correlation structure. For this reason, the ACF and 
+               PACF of the residuals of the ARIMA model that has been fitted 
+               should not contain any significant remaing correlation."),
+            h4("Though forecasting is the purpose for fitting an ARIMA model, 
+               looking at the forecast itself (against future values that have 
+               been reserved) isnt the best way to assess the goodness of the 
+               model's fit, this is why we look at the AIC and the ACF plots 
+               of the residuals of the model.")
           ),
           br(),
           fluidRow(
