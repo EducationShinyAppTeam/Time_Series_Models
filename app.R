@@ -48,12 +48,12 @@ ui <- list(
     dashboardSidebar(
       width = 250,
       sidebarMenu(
-        id = "tabs",
+        id = "pagess",
         menuItem("Overview", tabName = "overview", icon = icon("tachometer_alt")),
         menuItem("Prerequisite", tabName = "pre", icon = icon("book")),
         menuItem("Simulation", tabName = "sim", icon = icon("wpexplorer")),
         menuItem("Analyzing Real Data", tabName = "data", icon = icon("cogs")),
-        menuItem("Concept Game", tabName = "game", icon = icon("gamepad")),
+        #menuItem("Concept Game", tabName = "game", icon = icon("gamepad")),
         menuItem("References", tabName = "references", icon = icon("leanpub"))
       ),
       tags$div(
@@ -90,24 +90,6 @@ ui <- list(
                  pread (in the valleys and peaks) is constant over the duration
                  of the time series.")
           ),
-          # column(
-          #   11,
-          #   h3(tags$li("Stationarity:")),
-          #   h4("Diagnostics for stationarity include looking for constant mean 
-          #      (or, trend) and variance over time"),
-          #   column(11, offset=1,
-          #          
-          #     h4("Constant mean is associated with data that does not have any 
-          #        sort of vertical (typically linear) trend over time."),
-          #     h4("Seasonality could also be apparent in the mean structure. 
-          #        Recall that seasonal ARIMA cannot explain a seasonal trend, 
-          #        only seasonal correlations (ARIMA models work to explain 
-          #        correlation structure of a time series AFTER the mean and 
-          #        variance are constant)."),
-          #     h4("Constant variance is associated with data whose vertical s
-          #        pread (in the valleys and peaks) is constant over the duration
-          #        of the time series.")
-          #   ),
           br(),
           box(
             width =12,
@@ -131,26 +113,6 @@ ui <- list(
                guide after the ACF and PACF plots have been thoroughly 
                inspected."),
           ),
-            # h3(tags$li("Autocorrelation Functions of Stationary Time Series:")),
-            # h4("We typically trust the dashed lines in the autocorrelation 
-            #    function (ACF) plots to be the significance cut-off bounds for 
-            #    any lag's correlation"),
-            # h4("In a model with non-zero autoregressive (AR) and moving average 
-            #    (MA) parts, there is no logical interpretation for both ACFS 
-            #    cutting off, thus,"),
-            # column(
-            #   11, offset=1,
-            #   h4(tags$li("For AR(p) models, the ACF will tail off and the PACF 
-            #              will cut off after lag p.")),
-            #   h4(tags$li("For MA(q) models, the ACF will cut off after lag q, 
-            #              and the PACF will tail off.")),
-            #    h4(tags$li("For ARMA(p, q) models, both the ACF and the PACF 
-            #               will both tail off."))
-            # ),
-            # h4("The ARMA subsets plot is not the best tool for determining 
-            #    ARMA(p,q) orders, and thus will only be used as a tie breaker or 
-            #    guide after the ACF and PACF plots have been thoroughly 
-            #    inspected."),
           br(),
           box(
             width =12,
@@ -168,17 +130,6 @@ ui <- list(
                model's fit, this is why we look at the AIC and the ACF plots 
                of the residuals of the model.")
           ),
-            # h3(tags$li("Model Diagnostics:")),
-            # h4("The ARIMA model aims to forecast future values of a stationary 
-            #    time series by estimating a mathematical function to explain the 
-            #    underlying correlation structure. For this reason, the ACF and 
-            #    PACF of the residuals of the ARIMA model that has been fitted 
-            #    should not contain any significant remaing correlation."),
-            # h4("Though forecasting is the purpose for fitting an ARIMA model, 
-            #    looking at the forecast itself (against future values that have 
-            #    been reserved) isnt the best way to assess the goodness of the 
-            #    model's fit, this is why we look at the AIC and the ACF plots 
-            #    of the residuals of the model.")
         ),
         #### Overview page ----
         tabItem(
@@ -547,15 +498,6 @@ ui <- list(
               div(style = "position:relative; z-index: 950;",
                 plotlyOutput("forecast")
               ),br(),
-              # fluidRow(
-              #   div(style = "position:relative; z-index: 900;",
-              #     div(style = "margin-top: -20vh;",
-              #       div(style = "text-align: center",
-              #         imageOutput("bar") #, height = "1000px")
-              #       )
-              #     )
-              #   )
-              # ),
               wellPanel(
                 fluidRow(
                   #div(style = "position:relative; z-index: 950;",
@@ -661,13 +603,13 @@ ui <- list(
 server <- function(input, output, session) {
   ######exploration and simulation
   observeEvent(input$go0,{
-    updateTabItems(session, "tabs", "overview")
+    updateTabItems(session, "pages", "overview")
   })
   observeEvent(input$go1,{
-    updateTabItems(session, "tabs", "sim")
+    updateTabItems(session, "pages", "sim")
   })
   observeEvent(input$go2,{
-    updateTabItems(session, "tabs", "data")
+    updateTabItems(session, "pages", "data")
   })
   observeEvent(input$go4,{
     # if(!(input$trend & !input$trend1 & !input$trend2 & !input$trend3)){
@@ -1716,7 +1658,7 @@ server <- function(input, output, session) {
     
   }, deleteFile = TRUE)
   
-  ######tic-tac-toe
+  ######tic-tac-toe ----
   observeEvent(input$info,{
     sendSweetAlert(
       session = session,
@@ -2003,7 +1945,7 @@ server <- function(input, output, session) {
   
   #### go button ####
   observeEvent(input$go, priority=1, {
-    updateTabItems(session, "tabs", "qqq")
+    updateTabItems(session, "pages", "qqq")
   })
   observe({
     validate(
@@ -2205,57 +2147,57 @@ server <- function(input, output, session) {
   })
   
   #these apply to if the game has already been started 
-  observeEvent(input$submit, {
-    # (validate) makes sure the player selected an answer when he pressed submit
-    num <- as.character(numbers$question[length(numbers$question)])
-    # this (directly below) has been hard coded to correspond with the number of questions in the question bank
-    ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
-    else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
-    
-    # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
-    validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
-    
-    updateButton(session, 'submit', style = "color: white;", disabled = TRUE)
-    updateButton(session, 'nextButton', style = "color: white;", disabled = FALSE)
-    output$directions <- renderText({"Now press the next button"})
-  })
-  observeEvent(input$image_click, {
-    validate(need(is.null(game()), label='Game is over'))
-    
-    if(!(clicks$A > (clicks$C + 1))){
-      updateButton(session, 'submit', style = "color: white;", disabled = FALSE)
-      output$directions <- renderText({"Now answer the question and press submit"})
-    }
-  })
+  # observeEvent(input$submit, {
+  #   # (validate) makes sure the player selected an answer when he pressed submit
+  #   num <- as.character(numbers$question[length(numbers$question)])
+  #   # this (directly below) has been hard coded to correspond with the number of questions in the question bank
+  #   ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
+  #   else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+  #   
+  #   # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
+  #   validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
+  #   
+  #   updateButton(session, 'submit', style = "color: white;", disabled = TRUE)
+  #   updateButton(session, 'nextButton', style = "color: white;", disabled = FALSE)
+  #   output$directions <- renderText({"Now press the next button"})
+  # })
+  # observeEvent(input$image_click, {
+  #   validate(need(is.null(game()), label='Game is over'))
+  #   
+  #   if(!(clicks$A > (clicks$C + 1))){
+  #     updateButton(session, 'submit', style = "color: white;", disabled = FALSE)
+  #     output$directions <- renderText({"Now answer the question and press submit"})
+  #   }
+  # })
   
   ####checks answer####
-  answers <- reactiveVal(c(rep('', Qs)))
-  observeEvent(input$submit, {
-    #(validate) makes sure the player selected an answer when he pressed submit
-    num <- as.character(numbers$question[length(numbers$question)])
-    # this (directly below) has been hard coded to correspond with the number of questions in the question bank
-    ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
-    else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
-    
-    # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
-    validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
-    
-    temp <- answers()
-    num <- as.character(numbers$question[length(numbers$question)])
-    # this (directly below) has been hard coded to correspond with the number of questions in the question bank
-    ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
-    else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
-    
-    if(ans == bank[num, 3]){
-      temp2 <- "correct"
-    }else{
-      temp2 <- "incorrect"
-    }
-    temp[num] <- temp2
-    answers(temp)
-    container[(length(container)+1)] <<- ifelse(temp[num] == "correct", 1, 0)
-    
-  })
+  # answers <- reactiveVal(c(rep('', Qs)))
+  # observeEvent(input$submit, {
+  #   #(validate) makes sure the player selected an answer when he pressed submit
+  #   num <- as.character(numbers$question[length(numbers$question)])
+  #   # this (directly below) has been hard coded to correspond with the number of questions in the question bank
+  #   ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
+  #   else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+  #   
+  #   # also, the 100 max set below in seq() is hard coded for certain probability questions I ask in the question bank, if you have questions with numeric inputs, this may need to change (unless input associating input attributes are changed instead)
+  #   validate(need((ans %in% c("A", "B", "C", "D","E", seq(0:100))), label='please select one of the multiple choice responses'))
+  #   
+  #   temp <- answers()
+  #   num <- as.character(numbers$question[length(numbers$question)])
+  #   # this (directly below) has been hard coded to correspond with the number of questions in the question bank
+  #   ans <- if(num==1){input$'1'}else if(num==2){input$'2'}else if(num==3){input$'3'}else if(num==4){input$'4'}else if(num==5){input$'5'}else if(num==6){input$'6'}else if(num==7){input$'7'}else if(num==8){input$'8'}else if(num==9){input$'9'}else if(num==10){input$'10'}else if(num==11){input$'11'}else if(num==12){input$'12'}else if(num==13){input$'13'}else if(num==14){input$'14'}else if(num==15){input$'15'}else if(num==16){input$'16'}else if(num==17){input$'17'}else if(num==18){input$'18'}else if(num==19){input$'19'}else if(num==20){input$'20'}
+  #   else if(num==21){input$'21'}else if(num==22){input$'22'}else if(num==23){input$'23'}else if(num==24){input$'24'}else if(num==25){input$'25'}else if(num==26){input$'26'}else if(num==27){input$'27'}else if(num==28){input$'28'}else if(num==29){input$'29'}else if(num==30){input$'30'}else if(num==31){input$'31'}else if(num==32){input$'32'}else if(num==33){input$'33'}else if(num==34){input$'34'}else if(num==35){input$'35'}else if(num==36){input$'36'}else if(num==37){input$'37'}else if(num==38){input$'38'}else if(num==39){input$'39'}else if(num==40){input$'40'}
+  #   
+  #   if(ans == bank[num, 3]){
+  #     temp2 <- "correct"
+  #   }else{
+  #     temp2 <- "incorrect"
+  #   }
+  #   temp[num] <- temp2
+  #   answers(temp)
+  #   container[(length(container)+1)] <<- ifelse(temp[num] == "correct", 1, 0)
+  #   
+  # })
 }
 
 boastUtils::boastApp(ui = ui, server = server)
