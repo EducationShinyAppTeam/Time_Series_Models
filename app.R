@@ -858,7 +858,8 @@ server <- function(input, output, session) {
             shinyjs::disable("trend2")
           }
         }else{
-          # this is when the trend goes from being chosen to not chosen (all check boxes unchecked)
+  # this is when the trend goes from being chosen to not chosen 
+  # (all check boxes unchecked)
           shinyjs::enable("trend1")
           shinyjs::enable("trend2")
           shinyjs::enable("trend3")
@@ -881,8 +882,11 @@ server <- function(input, output, session) {
     {input$trend
       input$trend1
       input$trend2
-      input$trend3}, label = 'turn off everything when the trend is removed if things were removed before it', {
-        if((input$trend1 | input$trend2 | input$trend3) & (input$log | input$diff | input$seas_diff)){
+      input$trend3}, 
+    label = 'turn off everything when the trend is removed if things were 
+    removed before it', {
+        if((input$trend1 | input$trend2 | input$trend3) &
+           (input$log | input$diff | input$seas_diff)){
           shinyjs::disable("log")
           shinyjs::disable("diff")
           shinyjs::disable("diff2")
@@ -905,14 +909,17 @@ server <- function(input, output, session) {
     if(input$seas_diff == FALSE){
       updateNumericInput(session, "seas", value=1) 
       updateCheckboxInput(session, "seas_diff2", value=FALSE)    
-      #this may interfere with the observer directly below but that shouldnt be a problem
+      #this may interfere with the observer directly below but that 
+      #shouldnt be a problem
       warning("four", 4)
     }
   })
   observeEvent(
     {input$seas
-      input$seas_diff2}, label = 'reset "period" in step2 when set "season" in step1', {
-        validate(need(!(input$seas_diff == FALSE & input$seas_diff2 == FALSE), label = ''))
+      input$seas_diff2}, label = 'reset "period" in step2 when set "season" 
+    in step1', {
+        validate(need(!(input$seas_diff == FALSE & input$seas_diff2 == FALSE), 
+                      label = ''))
         updateNumericInput(session, "period", value=0)
       })
   
@@ -1016,22 +1023,35 @@ server <- function(input, output, session) {
                      }
                    }
 # assign transformation that removes trend/mean if it was done first
-                   if(sum(c(checks$a, checks$b, checks$c)) == 0 | sum(c(input$log, input$diff, input$seas_diff)) == 0){
+                   if(sum(c(checks$a, checks$b, checks$c)) == 0 | 
+                      sum(c(input$log, input$diff, input$seas_diff)) == 0){
                      if(input$trend1 | input$trend2 | input$trend3){
                        warning("TIT1")
                        when("first")
-                       data <- ts(data, frequency = ifelse(frequency(data())==1, input$frequency, frequency(data())))
-                       if(!(input$trend1 == FALSE & input$trend2 == FALSE & input$trend3 == FALSE)){
+                       data <- ts(data, 
+                                  frequency = ifelse(
+                                    frequency(data())==1, 
+                                    input$frequency, frequency(data())))
+                       if(!(input$trend1 == FALSE & input$trend2 == FALSE & 
+                            input$trend3 == FALSE)){
                          if(input$trend1){
                            mean <- time(data) - mean(time(data))
                          }else if(input$trend2){
                            mean <- season(x=data)
                          }else if(input$trend3){
-                           mean <- harmonic(x=data, m = ifelse(frequency(data())==1, input$frequency, frequency(data())) /2)
+                           mean <- harmonic(
+                             x=data, 
+                             m = ifelse(
+                               frequency(data())==1, 
+                               input$frequency, frequency(data())) /2)
                          }
                          reg.mean(mean)
                          reg(lm(data~mean-1))
-                         transformed(ts(reg()$residuals, frequency = ifelse(frequency(data())==1, input$frequency, frequency(data()))))
+                         transformed(
+                           ts(reg()$residuals, 
+                              frequency = ifelse(frequency(data())==1, 
+                                                 input$frequency, 
+                                                 frequency(data()))))
                          data <- transformed()
                        }
                        checks$a <- FALSE
@@ -1047,10 +1067,12 @@ server <- function(input, output, session) {
                          if(input$seas_diff==TRUE){
                            if(input$seas_diff2==TRUE){
                              # 2nd diff of log and then 2nd seasonal diff
-                             transformed(diff(diff(log(data), differences = 2), lag = input$seas, differences = 2))
+                             transformed(diff(diff(log(data), differences = 2), 
+                                              lag = input$seas, differences = 2))
                            }else{
                              # 2nd diff of log and then 1st seasonal diff
-                             transformed(diff(diff(log(data), differences = 2), lag = input$seas))
+                             transformed(diff(diff(log(data), differences = 2), 
+                                              lag = input$seas))
                            }
                          }else{
                            # 2nd diff of log
@@ -1060,7 +1082,8 @@ server <- function(input, output, session) {
                          if(input$seas_diff==TRUE){
                            if(input$seas_diff2==TRUE){
                              # 1st diff of log and then 2nd seasonal diff
-                             transformed(diff(diff(log(data)), lag = input$seas, differences = 2))
+                             transformed(diff(diff(log(data)), 
+                                              lag = input$seas, differences = 2))
                            }else{
                              # 1st diff of log and then 1st seasonal diff
                              transformed(diff(diff(log(data)), lag = input$seas))
@@ -1074,7 +1097,8 @@ server <- function(input, output, session) {
                        if(input$seas_diff==TRUE){
                          if(input$seas_diff2==TRUE){
                            # 2nd seasonal diff of log
-                           transformed(diff(log(data), lag = input$seas, differences = 2))
+                           transformed(diff(log(data), 
+                                            lag = input$seas, differences = 2))
                          }else{
                            # 1st seasonal diff of log
                            transformed(diff(log(data), lag = input$seas))
@@ -1090,10 +1114,12 @@ server <- function(input, output, session) {
                        if(input$seas_diff==TRUE){
                          if(input$seas_diff2==TRUE){
                            # 2nd diff and then 2nd seasonal diff
-                           transformed(diff(diff(data, differences = 2), lag = input$seas, differences = 2))
+                           transformed(diff(diff(data, differences = 2), 
+                                            lag = input$seas, differences = 2))
                          }else{  
                            # 2nd diff and then 1st seasonal diff
-                           transformed(diff(diff(data, differences = 2), lag = input$seas))
+                           transformed(diff(diff(data, differences = 2), 
+                                            lag = input$seas))
                          }
                        }else{
                          # 2nd diff
@@ -1103,7 +1129,8 @@ server <- function(input, output, session) {
                        if(input$seas_diff==TRUE){
                          if(input$seas_diff2==TRUE){
                            # 1st diff and then 2nd seasonal diff
-                           transformed(diff(diff(data), lag = input$seas, differences = 2))
+                           transformed(diff(diff(data), lag = input$seas, 
+                                            differences = 2))
                          }else{
                            # 1st diff and then 1st seasonal diff
                            transformed(diff(diff(data), lag = input$seas))
@@ -1123,24 +1150,30 @@ server <- function(input, output, session) {
                        transformed(diff(data, lag = input$seas))
                      }
                    }
-                   
-                   
-                   #assign transformation that removes trend/mean if it WASNT done first (if it was just recently entered)
+#assign transformation that removes trend/mean if it WASNT done first 
+# (if it was just recently entered)
                    if(sum(c(checks$a, checks$b, checks$c)) > 0){
                      when("last")
                      warning("TIT2")
                      data <- transformed()
-                     if(!(input$trend1 == FALSE & input$trend2 == FALSE & input$trend3 == FALSE)){
+                     if(!(input$trend1 == FALSE & 
+                          input$trend2 == FALSE & input$trend3 == FALSE)){
                        if(input$trend1){
                          mean <- time(data) - mean(time(data))
                        }else if(input$trend2){
                          mean <- season(x=data)
                        }else if(input$trend3){
-                         mean <- harmonic(x=data, m = ifelse(frequency(data())==1, input$frequency, frequency(data())) /2)
+                         mean <- harmonic(
+                           x=data, 
+                           m = ifelse(frequency(data())==1, 
+                                      input$frequency, frequency(data())) /2)
                        }
                        reg.mean(mean)
                        reg(lm(data~mean-1))
-                       transformed(ts(reg()$residuals, frequency = ifelse(frequency(data())==1, input$frequency, frequency(data()))))
+                       transformed(ts(reg()$residuals, 
+                                      frequency = ifelse(frequency(data())==1, 
+                                                         input$frequency, 
+                                                         frequency(data()))))
                      }
                      checks$a <- FALSE
                      checks$b <- FALSE
@@ -1153,7 +1186,9 @@ server <- function(input, output, session) {
                      reg.mean(NA)
                    }
                    
-                   if(input$log == FALSE & input$diff == FALSE & input$seas_diff == FALSE & when()!= "no trend removal"){
+                   if(input$log == FALSE & 
+                      input$diff == FALSE & 
+                      input$seas_diff == FALSE & when()!= "no trend removal"){
                      when("first")
                    }
                  })
@@ -1817,7 +1852,7 @@ server <- function(input, output, session) {
     text("Percentage to the optimal model fit's AIC", x=50, y=20, cex=1.2)
     dev.off()
     
-    #Return a list containing the filename
+    # Return a list containing the filename
     list(src = outfile,
          contentType = 'image/png',
          width = 400,
