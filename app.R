@@ -48,7 +48,7 @@ ui <- list(
     dashboardSidebar(
       width = 250,
       sidebarMenu(
-        id = "pagess",
+        id = "pages",
         menuItem("Overview", tabName = "overview", icon = icon("tachometer-alt")),
         menuItem("Prerequisite", tabName = "pre", icon = icon("book")),
         menuItem("Simulation", tabName = "sim", icon = icon("wpexplorer")),
@@ -331,11 +331,11 @@ ui <- list(
             id = "tabs2",
             tabPanel(
               title = h4("Achieving Stationarity"), value = "step1",
-              h4("To begin, please choose from of the data sets below any one 
+              p("To begin, please choose from of the data sets below any one 
                  that you would like."),
-              h4("Use the checkbox options to make your data look satisfactorily 
+              p("Use the checkbox options to make your data look satisfactorily 
                  stationary."),
-              h4("The first part of our analysis is achieving stationarity, so 
+              p("The first part of our analysis is achieving stationarity, so 
                  that you can correctly judge the correlation structure to 
                  assign to the arima model."),
               sidebarLayout(
@@ -434,7 +434,7 @@ ui <- list(
           ),
           tabPanel(
             title = h4("Determine ARMA order"), value = "step2",
-            h4("Now, that you have made your data stationary, you can inspect 
+            p("Now, that you have made your data stationary, you can inspect 
                the resulting acf plots as well as the ARMAsubsets plot below 
                to determine the arima order and fit a model."),
             fluidRow(
@@ -450,7 +450,7 @@ ui <- list(
                       trigger = "hover", placement = "top")
             ),
             div(style = "text-align: center",
-              h4('After you are finished making your choices, press the 
+              p('After you are finished making your choices, press the 
                 "Next step!" button below to see how good of a fit your model 
                 was.')
             ),
@@ -481,7 +481,7 @@ ui <- list(
           tabPanel(title = h4("Forecast"), value = "step3",
             fluidRow(
               column(11,
-                h4("Below you can see how well you fit the data to a time 
+                p("Below you can see how well you fit the data to a time 
                    series by seeing the resulting forecasts (plotted against 
                    the last 12 observations of the data set, which were hidden 
                    from the initial time series plot), this plot will show 
@@ -548,6 +548,7 @@ ui <- list(
           )
         ))
         ),
+        #### References ----
         tabItem(
           tabName = "references",
           withMathJax(),
@@ -620,9 +621,7 @@ ui <- list(
 # Define server logic ----
 server <- function(input, output, session) {
   ######exploration and simulation
-  observeEvent(input$go0,{
-    updateTabItems(session, "pages", "overview")
-  })
+
   observeEvent(input$go1,{
     updateTabItems(session, "pages", "sim")
   })
@@ -744,9 +743,6 @@ server <- function(input, output, session) {
   output$plot.PACF <- renderPlot({
     pacf(sim(), main = "PACF")
   })
-  
-  
-  
   
   
   ####### REAL DATA #######
