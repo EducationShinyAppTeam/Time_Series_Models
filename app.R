@@ -49,11 +49,10 @@ ui <- list(
       width = 250,
       sidebarMenu(
         id = "pagess",
-        menuItem("Overview", tabName = "overview", icon = icon("tachometer_alt")),
+        menuItem("Overview", tabName = "overview", icon = icon("tachometer-alt")),
         menuItem("Prerequisite", tabName = "pre", icon = icon("book")),
         menuItem("Simulation", tabName = "sim", icon = icon("wpexplorer")),
         menuItem("Analyzing Real Data", tabName = "data", icon = icon("cogs")),
-        #menuItem("Concept Game", tabName = "game", icon = icon("gamepad")),
         menuItem("References", tabName = "references", icon = icon("leanpub"))
       ),
       tags$div(
