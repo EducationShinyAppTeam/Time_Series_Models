@@ -149,8 +149,8 @@ ui <- list(
             model, and observe the quality of their model in this analysis. The 
             third feature will quiz the user about time series concepts as a 
             part of a fun tic-tac-toe game."),
-          h2("Instructions:"),
-          h3("Simulation Exploration:"),
+          h2("Instructions"),
+          h3("Simulation Exploration"),
           tags$ol(
             tags$li("Use the sliders for the coefficients and explore how 
                     changing parameter values affects the time series plot."),
@@ -161,7 +161,7 @@ ui <- list(
           div(style = "text-align: center",
             bsButton("go1", "GO!", icon("bolt"), size = "large", class="circle grow")
           ),
-          h3("Time Series Analysis with real data:"),
+          h3("Time Series Analysis with real datalate"),
           tags$ol(
             tags$li("In the first tab, select the data set that 
               you would like to analyze, and fit 
@@ -186,7 +186,7 @@ ui <- list(
                      class="circle grow")
           ),
           br(),br(),
-          h2("Acknowledgements:"),
+          h2("Acknowledgements"),
           p("This app wass developed by Ryan Voyack and Yubaihe Grace Zhou 
             in 2018 and updated by Stuart Vas in 2022",
             br(),br(),
@@ -320,7 +320,7 @@ ui <- list(
                                   )
                   )
                   )
-                )#fluidpage
+                )
         ),
         
         #### Datasets ----
@@ -499,8 +499,6 @@ ui <- list(
               ),br(),
               wellPanel(
                 fluidRow(
-                  #div(style = "position:relative; z-index: 950;",
-                  #div(style = "margin-top: -20vh;",
                   column(6, plotOutput("fitQuality1")),
                     bsPopover(
                       id="fitQuality1", title = "ACF residuals", 
@@ -644,37 +642,37 @@ server <- function(input, output, session) {
   
   ####### SIMULATED #######
   
-  observeEvent(input$info1,{
-    sendSweetAlert(
-      session = session,
-      title = "Instructions:",
-      text = "•	Use the sliders for the coefficients and explore how changing 
-      parameter values affects the time series plot.\n
-      •	Use the drop down menus and observe how different orders of models 
-      effect the autocorrelation function (ACF) and partial autocorrelation 
-      function (PACF) plots.",
-      type = "info"
-    )
-  })
-  observeEvent(input$info2,{
-    sendSweetAlert(
-      session = session,
-      title = "Instructions:",
-      text = "•	In the first tab, select the data set that you would like to 
-      analyze, and fit transformations until the data seems stationary.\n
-      •	Here, you must consider that the last 12 observations of each data set 
-      are hidden from the user so that they could be presented in the last tab 
-      alongside the user's model's forecasts.\n
-      •	For each transformation consider the following:\n
-      i. The transformations are of the form `seas_diff(diff(log(data)))`, 
-      that is, the log transformation will always be taken first, followed by 
-      the difference of lag one, and then the seasonal differencing.\n
-      ii. The trend can only be removed before any other transformation, or 
-      after all transformations. The trend is removed using regression, and the 
-      transformed data is the residuals from that regression.",
-      type = "info"
-    )
-  })
+  # observeEvent(input$info1,{
+  #   sendSweetAlert(
+  #     session = session,
+  #     title = "Instructions:",
+  #     text = "•	Use the sliders for the coefficients and explore how changing
+  #     parameter values affects the time series plot.\n
+  #     •	Use the drop down menus and observe how different orders of models
+  #     effect the autocorrelation function (ACF) and partial autocorrelation
+  #     function (PACF) plots.",
+  #     type = "info"
+  #   )
+  # })
+  # observeEvent(input$info2,{
+  #   sendSweetAlert(
+  #     session = session,
+  #     title = "Instructions:",
+  #     text = "•	In the first tab, select the data set that you would like to
+  #     analyze, and fit transformations until the data seems stationary.\n
+  #     •	Here, you must consider that the last 12 observations of each data set
+  #     are hidden from the user so that they could be presented in the last tab
+  #     alongside the user's model's forecasts.\n
+  #     •	For each transformation consider the following:\n
+  #     i. The transformations are of the form `seas_diff(diff(log(data)))`,
+  #     that is, the log transformation will always be taken first, followed by
+  #     the difference of lag one, and then the seasonal differencing.\n
+  #     ii. The trend can only be removed before any other transformation, or
+  #     after all transformations. The trend is removed using regression, and the
+  #     transformed data is the residuals from that regression.",
+  #     type = "info"
+  #   )
+  # })
   #make sure higher order models are stationary
   observeEvent(input$phi1, {
     if(input$p == '1'){return(NULL)}
