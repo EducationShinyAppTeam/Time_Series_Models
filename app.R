@@ -622,22 +622,20 @@ server <- function(input, output, session) {
 
   observeEvent(input$go1,{
     updateTabItems(session, "pages", "sim")
-  })
+  }, label = "go1")
   observeEvent(input$go2,{
     updateTabItems(session, "pages", "data")
-  })
+  }, label = "go2")
   observeEvent(input$go4,{
-    # if(!(input$trend & !input$trend1 & !input$trend2 & !input$trend3)){
     updateTabsetPanel(session, "tabs2",
                       selected = "step2"
     )
-    # }
-  })
+  }, label = "go4")
   observeEvent(input$go5,{
     updateTabsetPanel(session, "tabs2",
                       selected = "step3"
     )
-  })
+  }, label = "go5")
   
   
   ####### SIMULATED #######
@@ -681,7 +679,7 @@ server <- function(input, output, session) {
                       min=ifelse(val > 0, -val, val), 
                       max=ifelse(val < 0, -val, val), 
                       value=input$phi2, step=.1)
-  })
+  }, label = "phi1")
   #make sure higher order models are stationary
   observeEvent(input$theta1, {
     if(input$q == '1'){return(NULL)}
@@ -690,7 +688,7 @@ server <- function(input, output, session) {
                       inputId="theta2", min=ifelse(val > 0, -val, val), 
                       max=ifelse(val < 0, -val, val), value=input$theta2, 
                       step=.1)
-  })
+  }, label = "theta1")
   
   
   
@@ -726,10 +724,12 @@ server <- function(input, output, session) {
           }
           plot(sim(), main="Simulation")
         })
-      })
+      }, label = "reactive01")
+  
   output$plotACF <- renderPlot({
     acf(sim(), main = "Autocorrelation Function")
   })
+  
   output$plotPACF <- renderPlot({
     pacf(sim(), main = "Partial Autocorrelation Function")
   })
@@ -744,8 +744,7 @@ server <- function(input, output, session) {
   
   
   ####### REAL DATA #######
-  
-  #####
+
   # assign permissions to buttons and checkboxes (etc) based on tabs  
   observe({
     validate(need(input$sets=="Choose", label=''))
