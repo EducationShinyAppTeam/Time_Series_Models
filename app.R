@@ -750,7 +750,7 @@ server <- function(input, output, session) {
     validate(need(input$sets=="Choose", label=''))
     hideTab(inputId = "tabs2", target = "step2")
     hideTab(inputId = "tabs2", target = "step3")
-  })
+  }, label = "tabs 1")
   disabled_ <- reactiveVal("NO")
   observeEvent(input$sets, priority = 2, {
     if(input$sets != "Choose"){
