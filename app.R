@@ -267,8 +267,6 @@ ui <- list(
                              ),
                              conditionalPanel(
                                condition = ("input.q == '1' || input.q == '2'"),
-                               #h5(p(withMathJax(textOutput("Phi1")))),
-                               
                                sliderInput("theta1",
                                            label = "Theta1",
                                            min = -0.9,
